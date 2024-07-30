@@ -24,6 +24,10 @@ func main() {
 
 	// filesystem.GetIp(cmd.Url)
 
-	filesystem.ServerInfo(cmd.Url)
+	// filesystem.ServerInfo(cmd.Url)
+
+	// filesystem.MxRecord(cmd.Url)
+
+	filesystem.DNSRecord(cmd.Url)
 
 }

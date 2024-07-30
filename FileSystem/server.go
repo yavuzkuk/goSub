@@ -8,7 +8,7 @@ import (
 )
 
 func ServerInfo(url string) {
-	newUrl := IsHTTPS(url)
+	newUrl := HTTPS(url)
 
 	fmt.Println("-----------------------------" + color.BlueString("Server Type") + "-----------------------------")
 

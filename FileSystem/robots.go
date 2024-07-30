@@ -10,7 +10,7 @@ import (
 
 func Robots(url string) {
 
-	newUrl := IsHTTPS(url) + "/robots.txt"
+	newUrl := HTTPS(url) + "/robots.txt"
 
 	resp, err := http.Get(newUrl)
 

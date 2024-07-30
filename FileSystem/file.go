@@ -49,7 +49,7 @@ func parseStatusCodes(stringStatusCode string) []int {
 	return integerStatusCodes
 }
 
-func IsHTTPS(url string) string {
+func HTTPS(url string) string {
 	isHttps := strings.Contains(url, "https://")
 
 	if !isHttps {
@@ -59,11 +59,33 @@ func IsHTTPS(url string) string {
 	return url
 }
 
+func SplitUrl(url string) string {
+
+	containsHttps := strings.Contains(url, "https://")
+
+	var newUrl []string
+	var currentUrl string = url
+	if containsHttps {
+		newUrl = strings.Split(url, "/")
+		currentUrl = newUrl[2]
+	}
+
+	containsWWW := strings.Contains(currentUrl, "www")
+
+	if containsWWW {
+		newUrl = strings.Split(currentUrl, "www.")
+
+		currentUrl = newUrl[1]
+	}
+
+	return currentUrl
+}
+
 func BruteForceFile(url string, wordlistPath string, requestCount int, stringStatusCode string) {
 
 	integerStatusCodes := parseStatusCodes(stringStatusCode)
 
-	url = IsHTTPS(url)
+	url = HTTPS(url)
 
 	wordArray := wordlist.ReadWordlistFile(wordlistPath)
 	var counter int = 0
@@ -105,7 +127,7 @@ func SubDomainSearch(url string, wordlistPath string) {
 
 	var counter int
 
-	newUrl := IsHTTPS(url)
+	newUrl := HTTPS(url)
 
 	wordlist := wordlist.ReadWordlistFile(wordlistPath)
 
