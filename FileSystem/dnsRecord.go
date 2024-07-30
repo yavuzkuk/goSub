@@ -11,6 +11,8 @@ import (
 func DNSRecord(url string, dnstypes string) {
 	seperatedDns := strings.Split(dnstypes, "-")
 
+	fmt.Println(seperatedDns)
+
 	fmt.Println("-----------------------------" + color.BlueString("DNS Record Type") + "-----------------------------")
 
 	for _, v := range seperatedDns {
@@ -22,6 +24,8 @@ func DNSRecord(url string, dnstypes string) {
 			ARecord(url)
 		} else if v == "AAAA" {
 			AAAARecord(url)
+		} else if v == "TXT" {
+			TXTRecord(url)
 		}
 	}
 }
@@ -53,6 +57,18 @@ func MxRecord(url string) {
 	for _, v := range mx {
 		fmt.Println("Mail Server ---> ", color.GreenString(v.Host))
 	}
+}
+
+func TXTRecord(url string) {
+	newUrl := SplitUrl(url)
+
+	txt, err := net.LookupTXT(newUrl)
+
+	if err != nil {
+		fmt.Println("TXT error --> ", err)
+	}
+
+	fmt.Println("TXT Record  ---> ", color.GreenString(txt[0]))
 }
 
 func ARecord(url string) {
