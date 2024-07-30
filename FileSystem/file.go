@@ -2,7 +2,9 @@ package filesystem
 
 import (
 	"Cyrops/wordlist"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -11,6 +13,23 @@ import (
 
 	"github.com/fatih/color"
 )
+
+type IPInfo struct {
+	IPAddress     string  `json:"ip"`
+	City          string  `json:"city"`
+	Region        string  `json:"region"`
+	Country       string  `json:"country_name"`
+	PostalCode    string  `json:"postal"`
+	EuropeanUnion bool    `json:"in_eu"`
+	Latitude      float64 `json:"latitude"`
+	Longitude     float64 `json:"longitude"`
+	TimeZone      string  `json:"timezone"`
+	CallingCode   string  `json:"country_code"`
+	Currency      string  `json:"currency"`
+	Languages     string  `json:"languages"`
+	ASN           string  `json:"asn"`
+	Organization  string  `json:"org"`
+}
 
 func parseStatusCodes(stringStatusCode string) []int {
 	newStatusCode := strings.Split(stringStatusCode, ",")
@@ -118,18 +137,47 @@ func GetIp(url string) {
 	}
 
 	ipaddress, err := net.LookupIP(newUrl)
-
+	var IPv4 string
 	if err != nil {
 		fmt.Println("Ip address error ->", err)
 	}
-
 	if len(ipaddress) >= 2 {
 		fmt.Print("Domain: ", newUrl, " ----> IPv4 ")
 		color.Green(ipaddress[1].String())
 		fmt.Print("Domain: ", newUrl, " ----> IPv6 ")
 		color.Green(ipaddress[0].String())
+		IPv4 = ipaddress[1].String()
 	} else {
 		fmt.Print("Domain: ", newUrl, " ----> IPv4 ")
 		color.Green(ipaddress[0].String())
+		IPv4 = ipaddress[0].String()
 	}
+
+	GetLocation(IPv4)
+}
+
+func GetLocation(ip string) {
+	apiEndpoint := "https://ipapi.co/" + ip + "/json"
+	resp, err := http.Get(apiEndpoint)
+
+	if err != nil {
+		fmt.Println("Location error ->", err)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var location IPInfo
+	err = json.Unmarshal(body, &location)
+
+	if err != nil {
+		fmt.Println("JSON Unmarshall error ->", err)
+	}
+
+	fmt.Println(location.CallingCode + "/" + location.Country + "---" + location.Region + "---" + location.City)
+	fmt.Println(location.Organization)
+
 }
