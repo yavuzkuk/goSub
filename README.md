@@ -1,5 +1,9 @@
 # gokuk scan
 
+Bu araç [Golang](https://go.dev/) ile oluşturulmuştur. Bu araçla, parametre olarak verdiğiniz web sitesini tarayabilirsiniz.
+
+------
+
 This tool created with [Golang](https://go.dev/). With this tool, you can scan the website you provide as parameters.
 
 
@@ -12,6 +16,8 @@ This tool created with [Golang](https://go.dev/). With this tool, you can scan t
 - Subdomain Scan
 - Directory Scan
 - Web Server Infos
+
+ ### Parameters
 
 ```
 -d, --DNS Record Type string           A Record: IPv4 address

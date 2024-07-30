@@ -16,7 +16,7 @@ func DNSRecord(url string, dnstypes string) {
 	for _, v := range seperatedDns {
 		if v == "MX" {
 			MxRecord(url)
-		} else if v == "NX" {
+		} else if v == "NS" {
 			NsRecord(url)
 		} else if v == "A" {
 			ARecord(url)
@@ -24,9 +24,6 @@ func DNSRecord(url string, dnstypes string) {
 			AAAARecord(url)
 		}
 	}
-	// MxRecord(url)
-	// NsRecord(url)
-	// AsRecord(url)
 }
 
 func NsRecord(url string) {
