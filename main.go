@@ -18,5 +18,7 @@ func main() {
 	// fmt.Println("Main fonksiyon tarafı bu DNS: ", dnsTypes, "\n")
 
 	// filesystem.BruteForceFile(cmd.Url, cmd.WordList, cmd.RequestNumber, cmd.FilterStatusCode)
-	filesystem.SubDomainSearch(cmd.Url, cmd.WordList)
+	// filesystem.SubDomainSearch(cmd.Url, cmd.WordList)
+
+	filesystem.GetIp(cmd.Url)
 }

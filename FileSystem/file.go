@@ -3,6 +3,7 @@ package filesystem
 import (
 	"Cyrops/wordlist"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -102,5 +103,33 @@ func SubDomainSearch(url string, wordlistPath string) {
 			fmt.Printf("%-45s %d/%d -----> ", subdomain, counter, len(wordlist))
 			color.Green(strconv.Itoa(resp.StatusCode))
 		}
+	}
+}
+
+func GetIp(url string) {
+
+	isHttp := strings.Contains(url, "/")
+
+	var newUrl string = url
+
+	if isHttp {
+		urlsArray := strings.Split(url, "/")
+		newUrl = urlsArray[2]
+	}
+
+	ipaddress, err := net.LookupIP(newUrl)
+
+	if err != nil {
+		fmt.Println("Ip address error ->", err)
+	}
+
+	if len(ipaddress) >= 2 {
+		fmt.Print("Domain: ", newUrl, " ----> IPv4 ")
+		color.Green(ipaddress[1].String())
+		fmt.Print("Domain: ", newUrl, " ----> IPv6 ")
+		color.Green(ipaddress[0].String())
+	} else {
+		fmt.Print("Domain: ", newUrl, " ----> IPv4 ")
+		color.Green(ipaddress[0].String())
 	}
 }
