@@ -11,13 +11,10 @@ import (
 func main() {
 	cmd.Execute()
 
-	// _ := strings.Split(cmd.DNSType, "-")
-	// fmt.Println("Main fonksiyon tarafı bu Url: ", cmd.Url, "\n")
-	// fmt.Println("Main fonksiyon tarafı bu Wordlist: ", cmd.WordList, "\n")
-	// fmt.Println("Main fonksiyon tarafı bu Robots.txt: ", cmd.Robots, "\n")
-	// fmt.Println("Main fonksiyon tarafı bu DNS: ", dnsTypes, "\n")
-
-	// filesystem.Robots(cmd.Url)
+	// fmt.Println(cmd.Robots)
+	// if cmd.Robots {
+	// 	filesystem.Robots(cmd.Url)
+	// }
 
 	// filesystem.BruteForceFile(cmd.Url, cmd.WordList, cmd.RequestNumber, cmd.FilterStatusCode)
 	// filesystem.SubDomainSearch(cmd.Url, cmd.WordList)
@@ -26,8 +23,6 @@ func main() {
 
 	// filesystem.ServerInfo(cmd.Url)
 
-	// filesystem.MxRecord(cmd.Url)
-
-	filesystem.DNSRecord(cmd.Url)
+	filesystem.DNSRecord(cmd.Url, cmd.DNSType)
 
 }

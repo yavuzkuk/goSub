@@ -25,5 +25,4 @@ func Robots(url string) {
 		fmt.Printf("%s website don't have robots.txt file ---> ", newUrl)
 		color.Red(strconv.Itoa(resp.StatusCode))
 	}
-	fmt.Println("--------------------------------------------------------------------")
 }

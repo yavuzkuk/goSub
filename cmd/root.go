@@ -64,7 +64,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&Url, "url", "u", "", "You need to specify URL")
 	rootCmd.Flags().StringVarP(&WordList, "wordlist", "w", "wordlist/seclistWebContent.txt", "You can specify Wordlist")
 	rootCmd.Flags().BoolVarP(&Robots, "robots.txt", "r", true, "With default value the tool check the robots.txt file")
-	rootCmd.Flags().StringVarP(&DNSType, "DNS Record Type", "d", "A-AAAA-MX-NX", "A Record: IPv4 address\nAAAA Record:Ipv6 address\nMX Record:Mail record\nNS Record:Name server record")
+	rootCmd.Flags().StringVarP(&DNSType, "DNS Record Type", "d", "A-AAAA-MX-NS", "A Record: IPv4 address\nAAAA Record:Ipv6 address\nMX Record:Mail record\nNS Record:Name server record")
 	rootCmd.Flags().IntVarP(&RequestNumber, "count", "c", 10, "Request count")
 	rootCmd.Flags().StringVarP(&FilterStatusCode, "Filter HTTP Status Code", "f", "200,404", "You can filter HTTP Statsus Code with -f parameter")
 

@@ -82,7 +82,7 @@ func SplitUrl(url string) string {
 }
 
 func BruteForceFile(url string, wordlistPath string, requestCount int, stringStatusCode string) {
-
+	fmt.Println("-----------------------------" + color.BlueString("Directory scan") + "-----------------------------")
 	integerStatusCodes := parseStatusCodes(stringStatusCode)
 
 	url = HTTPS(url)
