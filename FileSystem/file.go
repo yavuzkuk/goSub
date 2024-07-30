@@ -67,16 +67,18 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 
 	wordArray := wordlist.ReadWordlistFile(wordlistPath)
 	var counter int = 0
+	var requestCounter int = 0
 	for i := 0; i < len(wordArray); i++ {
 		counter++
 		newUrl := url + "/" + wordArray[i]
 
 		if counter == requestCount {
-			time.Sleep(5 * time.Second)
+			time.Sleep(10 * time.Second)
 			counter = 0
 		}
 
 		resp, err := http.Get(newUrl)
+		requestCounter++
 
 		if err != nil {
 			fmt.Println("HTTP request error ", err)
@@ -85,13 +87,13 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 		for _, v := range integerStatusCodes {
 			if v == resp.StatusCode {
 				if resp.StatusCode == 200 {
-					fmt.Printf("URL: %-70s ----> ", newUrl)
+					fmt.Printf("URL: %-70s ---- %d/%d ---> ", newUrl, requestCounter, len(wordArray))
 					color.Green(strconv.Itoa(resp.StatusCode))
 				} else if resp.StatusCode == 404 {
-					fmt.Printf("URL: %-70s ----> ", newUrl)
+					fmt.Printf("URL: %-70s ----> %d/%d --->", newUrl, requestCounter, len(wordArray))
 					color.Red(strconv.Itoa(resp.StatusCode))
 				} else {
-					fmt.Printf("URL: %-70s ----> ", newUrl)
+					fmt.Printf("URL: %-70s ----> %d/%d --->", newUrl, requestCounter, len(wordArray))
 					color.Cyan(strconv.Itoa(resp.StatusCode))
 				}
 			}

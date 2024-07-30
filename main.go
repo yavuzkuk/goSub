@@ -20,5 +20,7 @@ func main() {
 	// filesystem.BruteForceFile(cmd.Url, cmd.WordList, cmd.RequestNumber, cmd.FilterStatusCode)
 	// filesystem.SubDomainSearch(cmd.Url, cmd.WordList)
 
-	filesystem.GetIp(cmd.Url)
+	// filesystem.GetIp(cmd.Url)
+
+	filesystem.Robots(cmd.Url)
 }

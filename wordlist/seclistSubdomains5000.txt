@@ -283,7 +283,6 @@ builder.cp
 travel
 mirror
 ca
-sso
 tickets
 alumni
 sitebuilder
