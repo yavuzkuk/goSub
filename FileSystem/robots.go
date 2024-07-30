@@ -17,7 +17,7 @@ func Robots(url string) {
 	if err != nil {
 		fmt.Println("Robots.txt error -->", err)
 	}
-	fmt.Println("-----------------------------" + color.GreenString("robots.txt") + "-----------------------------")
+	fmt.Println("-----------------------------" + color.BlueString("robots.txt") + "-----------------------------")
 	if resp.StatusCode == 200 {
 		fmt.Printf("%s website have robots.txt file ---> ", newUrl)
 		color.Green(strconv.Itoa(resp.StatusCode))

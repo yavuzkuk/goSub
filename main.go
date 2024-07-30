@@ -17,10 +17,13 @@ func main() {
 	// fmt.Println("Main fonksiyon tarafı bu Robots.txt: ", cmd.Robots, "\n")
 	// fmt.Println("Main fonksiyon tarafı bu DNS: ", dnsTypes, "\n")
 
+	// filesystem.Robots(cmd.Url)
+
 	// filesystem.BruteForceFile(cmd.Url, cmd.WordList, cmd.RequestNumber, cmd.FilterStatusCode)
 	// filesystem.SubDomainSearch(cmd.Url, cmd.WordList)
 
 	// filesystem.GetIp(cmd.Url)
 
-	filesystem.Robots(cmd.Url)
+	filesystem.ServerInfo(cmd.Url)
+
 }
