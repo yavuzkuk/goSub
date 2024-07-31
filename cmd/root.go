@@ -6,7 +6,6 @@ package cmd
 import (
 	"log"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -15,22 +14,11 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "Cyrops",
 	Short: "A brief description of your application",
-	Run: func(cmd *cobra.Command, args []string) {
-		if DNSType != "" {
-			DNSType = strings.ToUpper(DNSType)
-			i := 0
-			var dnsTypes = [5]string{"A", "AAAA", "MX", "NS", "A-AAAA-MX-NX"}
-			for _, v := range dnsTypes {
-				if v == DNSType {
-					i++
-					DNSType = v
-				}
-			}
-			if i == 0 {
-				DNSType = "A-AAAA-MX-NX"
-			}
-		}
-	},
+	// Run: func(cmd *cobra.Command, args []string) {
+	// 	if DNSType != "" {
+	// 		DNSType = strings.ToUpper(DNSType)
+	// 	}
+	// },
 	Version: "1",
 }
 

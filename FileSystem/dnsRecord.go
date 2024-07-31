@@ -10,7 +10,7 @@ import (
 
 func DNSRecord(url string, dnstypes string) {
 	seperatedDns := strings.Split(dnstypes, "-")
-
+	fmt.Println(seperatedDns)
 	fmt.Println("-----------------------------" + color.BlueString("DNS Record Type") + "-----------------------------")
 
 	for _, v := range seperatedDns {
@@ -24,6 +24,8 @@ func DNSRecord(url string, dnstypes string) {
 			AAAARecord(url)
 		} else if v == "TXT" {
 			TXTRecord(url)
+		} else {
+			fmt.Printf("Wrong arguments --> %s ", color.RedString(v))
 		}
 	}
 }

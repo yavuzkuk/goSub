@@ -23,4 +23,5 @@ func main() {
 	filesystem.ServerInfo(cmd.Url)
 	filesystem.DNSRecord(cmd.Url, cmd.DNSType)
 	filesystem.SPFRecord(cmd.Url)
+
 }
