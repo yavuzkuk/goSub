@@ -12,6 +12,7 @@ This tool created with [Golang](https://go.dev/). With this tool, you can scan t
     - NS Record
     - A Record (IPv4)
     - AAAA Record (IPv6)
+    - TXT Record
 - Check robots.txt file
 - Subdomain Scan
 - Directory Scan

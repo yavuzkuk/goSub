@@ -18,8 +18,9 @@ func ServerInfo(url string) {
 		fmt.Println("Server info error -->", err)
 	}
 
-	fmt.Println(color.GreenString(resp.Header.Get("Server")))
-
-	fmt.Println("---------------------------------------------------------------------")
-
+	if resp.Header.Get("Server") == "" {
+		fmt.Println(color.RedString("Server type unknow"))
+	} else {
+		fmt.Printf(color.GreenString("Server type %s\n", resp.Header.Get("Server")))
+	}
 }

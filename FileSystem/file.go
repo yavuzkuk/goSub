@@ -124,7 +124,7 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 }
 
 func SubDomainSearch(url string, wordlistPath string) {
-
+	fmt.Println("-----------------------------" + color.BlueString("Subdomain Search") + "-----------------------------")
 	var counter int
 
 	newUrl := HTTPS(url)
@@ -133,9 +133,9 @@ func SubDomainSearch(url string, wordlistPath string) {
 
 	for i := 0; i < len(wordlist); i++ {
 		counter++
-		newUrls := strings.Split(newUrl, "/")
+		newUrl := SplitUrl(newUrl)
 
-		subdomain := "https://" + wordlist[i] + "." + newUrls[2]
+		subdomain := "https://" + wordlist[i] + "." + newUrl
 
 		resp, err := http.Get(subdomain)
 
@@ -150,7 +150,7 @@ func SubDomainSearch(url string, wordlistPath string) {
 }
 
 func GetIp(url string) {
-
+	fmt.Println("-----------------------------" + color.BlueString("IP Info") + "-----------------------------")
 	isHttp := strings.Contains(url, "/")
 
 	var newUrl string = url
@@ -181,6 +181,7 @@ func GetIp(url string) {
 }
 
 func GetLocation(ip string) {
+	fmt.Println("-----------------------------" + color.BlueString("Server Location") + "-----------------------------")
 	apiEndpoint := "https://ipapi.co/" + ip + "/json"
 	resp, err := http.Get(apiEndpoint)
 
@@ -194,14 +195,18 @@ func GetLocation(ip string) {
 		fmt.Println(err)
 	}
 
-	var location IPInfo
-	err = json.Unmarshal(body, &location)
+	if resp.StatusCode == 200 {
+		var location IPInfo
+		err = json.Unmarshal(body, &location)
 
-	if err != nil {
-		fmt.Println("JSON Unmarshall error ->", err)
+		if err != nil {
+			fmt.Println("JSON Unmarshall error ->", err)
+		}
+
+		fmt.Println(location.CallingCode + "/" + location.Country + "---" + location.Region + "---" + location.City)
+		fmt.Println(location.Organization)
+	} else if resp.StatusCode == 429 {
+		fmt.Printf("You sent too much request. You are at the free API plan. Be careful :=) yvz %s\n", color.RedString(strconv.Itoa(resp.StatusCode)))
 	}
-
-	fmt.Println(location.CallingCode + "/" + location.Country + "---" + location.Region + "---" + location.City)
-	fmt.Println(location.Organization)
 
 }

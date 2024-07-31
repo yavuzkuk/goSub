@@ -11,8 +11,6 @@ import (
 func DNSRecord(url string, dnstypes string) {
 	seperatedDns := strings.Split(dnstypes, "-")
 
-	fmt.Println(seperatedDns)
-
 	fmt.Println("-----------------------------" + color.BlueString("DNS Record Type") + "-----------------------------")
 
 	for _, v := range seperatedDns {
@@ -102,5 +100,33 @@ func AAAARecord(url string) {
 		fmt.Println("IPv6  ---> ", color.GreenString(ipaddress[0].String()))
 	} else {
 		fmt.Println("IPv6  ---> ", color.RedString("Not Found"))
+	}
+}
+
+func SPFRecord(url string) {
+	fmt.Println("-----------------------------" + color.BlueString("SPF Record") + "-----------------------------")
+
+	newUrl := SplitUrl(url)
+
+	resp, err := net.LookupTXT(newUrl)
+
+	if err != nil {
+		fmt.Println("SPF error --> ", err)
+	}
+
+	for _, v := range resp {
+		fmt.Println(v)
+	}
+
+	if len(resp) == 0 {
+		fmt.Println("TXT kayıtları bulunamadı")
+	} else {
+		spfSta := strings.HasPrefix(resp[0], "v=spf1")
+
+		if spfSta {
+			fmt.Printf("URL: %s ---> %s", url, color.GreenString("SPF kaydına sahip"))
+		} else {
+			fmt.Printf("URL: %s ---> %s", url, color.RedString("SPF kaydına sahip değil"))
+		}
 	}
 }
