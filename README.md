@@ -36,3 +36,18 @@ This tool created with [Golang](https://go.dev/). With this tool, you can scan t
   -v, --version                          version for Cyrops
   -w, --wordlist string                  You can specify Directory Wordlist (default "wordlist/seclistWebContent.txt")
 ```
+
+
+Examples:
+
+``go run .\main.go -u https://www.karabuk.edu.tr/``
+
+------
+``go run .\main.go -u https://www.karabuk.edu.tr/ -w <dirWordlist> -s <subdomainWordlist>``
+
+------
+``go run .\main.go -u https://www.karabuk.edu.tr/ -f 200``
+
+------
+``go run .\main.go -u https://www.karabuk.edu.tr/ -r``
+
