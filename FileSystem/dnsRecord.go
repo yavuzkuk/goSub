@@ -38,9 +38,12 @@ func NsRecord(url string) {
 	if err != nil {
 		fmt.Println("MX connect error -->", err)
 	}
-
-	for _, v := range ns {
-		fmt.Println("Name Server ---> ", color.GreenString(v.Host))
+	if len(ns) > 0 {
+		for _, v := range ns {
+			fmt.Println("Name Server ---> ", color.GreenString(v.Host))
+		}
+	} else {
+		fmt.Println("Name Server ---> ", color.RedString("Not found"))
 	}
 }
 
@@ -54,8 +57,12 @@ func MxRecord(url string) {
 		fmt.Println("MX connect error -->", err)
 	}
 
-	for _, v := range mx {
-		fmt.Println("Mail Server ---> ", color.GreenString(v.Host))
+	if len(mx) > 0 {
+		for _, v := range mx {
+			fmt.Println("Mail Server ---> ", color.GreenString(v.Host))
+		}
+	} else {
+		fmt.Println("Mail Server ---> ", color.RedString("Not found"))
 	}
 }
 
@@ -68,7 +75,11 @@ func TXTRecord(url string) {
 		fmt.Println("TXT error --> ", err)
 	}
 
-	fmt.Println("TXT Record  ---> ", color.GreenString(txt[0]))
+	if len(txt) > 0 {
+		fmt.Println("TXT Record  ---> ", color.GreenString(txt[0]))
+	} else {
+		fmt.Println("TXT Record  ---> ", color.RedString("Not found"))
+	}
 }
 
 func ARecord(url string) {
