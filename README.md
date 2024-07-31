@@ -40,6 +40,9 @@ This tool created with [Golang](https://go.dev/). With this tool, you can scan t
 
 Examples:
 
+``go run .\main.go -h``
+
+-----
 ``go run .\main.go -u https://www.karabuk.edu.tr/``
 
 ------
