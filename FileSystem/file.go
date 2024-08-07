@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -13,6 +14,10 @@ import (
 
 	"github.com/fatih/color"
 )
+
+type Response struct {
+	Subdomains []string `json:"subdomains"`
+}
 
 type IPInfo struct {
 	IPAddress     string  `json:"ip"`
@@ -88,6 +93,7 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 	url = HTTPS(url)
 
 	wordArray := wordlist.ReadWordlistFile(wordlistPath)
+	var totalSubDomain = 0
 	var counter int = 0
 	var requestCounter int = 0
 	for i := 0; i < len(wordArray); i++ {
@@ -109,6 +115,7 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 		for _, v := range integerStatusCodes {
 			if v == resp.StatusCode {
 				if resp.StatusCode == 200 {
+					totalSubDomain++
 					fmt.Printf("URL: %-70s ---- %d/%d ---> ", newUrl, requestCounter, len(wordArray))
 					color.Green(strconv.Itoa(resp.StatusCode))
 				} else if resp.StatusCode == 404 {
@@ -121,31 +128,37 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 			}
 		}
 	}
+
+	if totalSubDomain == 0 {
+		fmt.Println(color.RedString("No directory found with the given URL and wordlist."))
+	}
 }
 
 func SubDomainSearch(url string, wordlistPath string) {
 	fmt.Println("-----------------------------" + color.BlueString("Subdomain Search") + "-----------------------------")
-	var counter int
+	newUrl := SplitUrl(url)
 
-	newUrl := HTTPS(url)
+	api := "https://api.securitytrails.com/v1/domain/" + newUrl + "/subdomains?children_only=false&include_inactive=true"
 
-	wordlist := wordlist.ReadWordlistFile(wordlistPath)
+	req, _ := http.NewRequest("GET", api, nil)
 
-	for i := 0; i < len(wordlist); i++ {
-		counter++
-		newUrl := SplitUrl(newUrl)
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("APIKEY", "vhfMkIAoZ4btqET523SMU7AvR5bQuFnj")
 
-		subdomain := "https://" + wordlist[i] + "." + newUrl
+	res, _ := http.DefaultClient.Do(req)
 
-		resp, err := http.Get(subdomain)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
 
-		if err != nil && resp == nil {
-			continue
-		}
-		if resp.StatusCode == 200 {
-			fmt.Printf("%-45s %d/%d -----> ", subdomain, counter, len(wordlist))
-			color.Green(strconv.Itoa(resp.StatusCode))
-		}
+	var response Response
+	err := json.Unmarshal(body, &response)
+
+	if err != nil {
+		log.Fatalf("Error parsing JSON: %v", err)
+	}
+	for _, v := range response.Subdomains {
+		fmt.Printf("Subdomains: %s.%s\n", v, newUrl)
+
 	}
 }
 
@@ -165,18 +178,18 @@ func GetIp(url string) {
 	if err != nil {
 		fmt.Println("Ip address error ->", err)
 	}
-	if len(ipaddress) >= 2 {
-		fmt.Print("Domain: ", newUrl, " ----> IPv4 ")
-		color.Green(ipaddress[1].String())
-		fmt.Print("Domain: ", newUrl, " ----> IPv6 ")
-		color.Green(ipaddress[0].String())
-		IPv4 = ipaddress[1].String()
-	} else {
-		fmt.Print("Domain: ", newUrl, " ----> IPv4 ")
-		color.Green(ipaddress[0].String())
-		IPv4 = ipaddress[0].String()
-	}
 
+	if ipaddress != nil {
+		for _, v := range ipaddress {
+			if len(v) > 14 {
+				fmt.Println("Domain -->", url, " --- IPv6 -->", color.GreenString(v.String()))
+			} else {
+				fmt.Println("Domain -->", url, " --- IPv4 -->", color.GreenString(v.String()))
+			}
+		}
+	} else {
+		fmt.Println("Ip address error")
+	}
 	GetLocation(IPv4)
 }
 
@@ -206,7 +219,7 @@ func GetLocation(ip string) {
 		fmt.Println(location.CallingCode + "/" + location.Country + "---" + location.Region + "---" + location.City)
 		fmt.Println(location.Organization)
 	} else if resp.StatusCode == 429 {
-		fmt.Printf("You sent too much request. You are at the free API plan. Be careful :=) yvz %s\n", color.RedString(strconv.Itoa(resp.StatusCode)))
+		fmt.Printf("You sent too much request. You are at the free API plan. %s\n", color.RedString(strconv.Itoa(resp.StatusCode)))
 	}
 
 }

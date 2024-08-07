@@ -20,19 +20,19 @@ var rootCmd = &cobra.Command{
 		if DNSType != "" {
 			DNSType = strings.ToUpper(DNSType)
 		}
-		if Robots {
-			filesystem.Robots(Url)
-		}
+		// if Robots {
+		// 	filesystem.Robots(Url)
+		// }
+		// fmt.Println(Whois)
+		// if Whois {
+		// 	filesystem.ServerInfo(Url)
+		// 	filesystem.DNSRecord(Url, DNSType)
+		// 	filesystem.SPFRecord(Url)
+		// 	filesystem.GetIp(Url)
+		// }
 
-		filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
+		// filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
 		filesystem.SubDomainSearch(Url, SubdomainWordlist)
-
-		filesystem.GetIp(Url)
-
-		filesystem.ServerInfo(Url)
-		filesystem.DNSRecord(Url, DNSType)
-		filesystem.SPFRecord(Url)
-
 	},
 	Version: "1",
 }
@@ -53,6 +53,7 @@ var Robots bool
 var DNSType string
 var RequestNumber int
 var FilterStatusCode string
+var Whois bool
 
 func init() {
 	// Here you will define your flags and configuration settings.
@@ -73,6 +74,8 @@ func init() {
 	rootCmd.Flags().StringVarP(&DNSType, "DNS Record Type", "d", "A-AAAA-NS-MX-TXT", "A Record: IPv4 address\nAAAA Record:Ipv6 address\nMX Record:Mail record\nNS Record:Name server record\nTXT Record:Domain info text")
 	rootCmd.Flags().IntVarP(&RequestNumber, "count", "c", 10, "Request count")
 	rootCmd.Flags().StringVarP(&FilterStatusCode, "Filter HTTP Status Code", "f", "200,404", "You can filter HTTP Statsus Code with -f parameter")
+
+	rootCmd.Flags().BoolVarP(&Whois, "whois", "", false, "With default value the tool check the robots.txt file")
 
 	err := rootCmd.MarkFlagRequired("url")
 
