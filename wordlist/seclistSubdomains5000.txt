@@ -8,3 +8,5 @@ webdisk
 pop
 maps
 ctf
+app
+news

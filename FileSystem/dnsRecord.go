@@ -10,7 +10,6 @@ import (
 
 func DNSRecord(url string, dnstypes string) {
 	seperatedDns := strings.Split(dnstypes, "-")
-	fmt.Println(seperatedDns)
 	fmt.Println("-----------------------------" + color.BlueString("DNS Record Type") + "-----------------------------")
 
 	for _, v := range seperatedDns {
@@ -92,10 +91,10 @@ func ARecord(url string) {
 		fmt.Println("MX connect error -->", err)
 	}
 
-	if len(ipaddress) >= 2 {
-		fmt.Println("IPv4  ---> ", color.GreenString(ipaddress[1].String()))
-	} else {
-		fmt.Println("IPv4  ---> ", color.GreenString(ipaddress[0].String()))
+	for _, v := range ipaddress {
+		if len(v) <= 5 {
+			fmt.Println("A (IPv4): ---", url, " ---> ", color.GreenString(v.String()))
+		}
 	}
 }
 
@@ -110,9 +109,9 @@ func AAAARecord(url string) {
 	}
 
 	if len(ipaddress) >= 2 {
-		fmt.Println("IPv6  ---> ", color.GreenString(ipaddress[0].String()))
+		fmt.Println("AAAA (IPv6)  ---> ", color.GreenString(ipaddress[0].String()))
 	} else {
-		fmt.Println("IPv6  ---> ", color.RedString("Not Found"))
+		fmt.Println("AAAA (IPv6)  ---> ", color.RedString("Not Found"))
 	}
 }
 
