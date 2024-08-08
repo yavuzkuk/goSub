@@ -10,7 +10,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -148,7 +147,7 @@ func SubDomainSearch(url string, wordlistPath string) {
 		Timeout:            30,
 		MaxEnumerationTime: 10,
 	}
-	// disable timestamps in logs / configure logger
+
 	log.SetFlags(0)
 
 	subfinder, err := runner.NewRunner(subfinderOpts)
@@ -161,17 +160,8 @@ func SubDomainSearch(url string, wordlistPath string) {
 		log.Fatalf("failed to enumerate single domain: %v", err)
 	}
 
-	file, err := os.Open("domains.txt")
-	if err != nil {
-		log.Fatalf("failed to open domains file: %v", err)
-	}
-	defer file.Close()
-	if err = subfinder.EnumerateMultipleDomainsWithCtx(context.Background(), file, []io.Writer{output}); err != nil {
-		log.Fatalf("failed to enumerate subdomains from file: %v", err)
-	}
-
 	log.Println(output.String())
-
+	fmt.Println("asd")
 }
 
 func GetIp(url string) {
