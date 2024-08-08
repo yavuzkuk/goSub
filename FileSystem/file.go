@@ -2,16 +2,21 @@ package filesystem
 
 import (
 	"Cyrops/wordlist"
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/projectdiscovery/subfinder/v2/pkg/runner"
 )
 
 type IPInfo struct {
@@ -125,28 +130,38 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 
 func SubDomainSearch(url string, wordlistPath string) {
 	fmt.Println("-----------------------------" + color.BlueString("Subdomain Search") + "-----------------------------")
-	var counter int
 
-	newUrl := HTTPS(url)
+	newUrl := SplitUrl(url)
 
-	wordlist := wordlist.ReadWordlistFile(wordlistPath)
-
-	for i := 0; i < len(wordlist); i++ {
-		counter++
-		newUrl := SplitUrl(newUrl)
-
-		subdomain := "https://" + wordlist[i] + "." + newUrl
-
-		resp, err := http.Get(subdomain)
-
-		if err != nil && resp == nil {
-			continue
-		}
-		if resp.StatusCode == 200 {
-			fmt.Printf("%-45s %d/%d -----> ", subdomain, counter, len(wordlist))
-			color.Green(strconv.Itoa(resp.StatusCode))
-		}
+	subfinderOpts := &runner.Options{
+		Threads:            10,
+		Timeout:            30,
+		MaxEnumerationTime: 10,
 	}
+	// disable timestamps in logs / configure logger
+	log.SetFlags(0)
+
+	subfinder, err := runner.NewRunner(subfinderOpts)
+	if err != nil {
+		log.Fatalf("failed to create subfinder runner: %v", err)
+	}
+
+	output := &bytes.Buffer{}
+	if err = subfinder.EnumerateSingleDomainWithCtx(context.Background(), newUrl, []io.Writer{output}); err != nil {
+		log.Fatalf("failed to enumerate single domain: %v", err)
+	}
+
+	file, err := os.Open("domains.txt")
+	if err != nil {
+		log.Fatalf("failed to open domains file: %v", err)
+	}
+	defer file.Close()
+	if err = subfinder.EnumerateMultipleDomainsWithCtx(context.Background(), file, []io.Writer{output}); err != nil {
+		log.Fatalf("failed to enumerate subdomains from file: %v", err)
+	}
+
+	log.Println(output.String())
+
 }
 
 func GetIp(url string) {
