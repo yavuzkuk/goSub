@@ -32,8 +32,8 @@ var rootCmd = &cobra.Command{
 			filesystem.GetIp(Url)
 		}
 
-		// filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
-		// filesystem.SubDomainSearch(Url, SubdomainWordlist)
+		filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
+		filesystem.SubDomainSearch(Url, SubdomainWordlist)
 
 		if Tech {
 			filesystem.Tech(Url)
