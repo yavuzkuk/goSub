@@ -161,7 +161,6 @@ func SubDomainSearch(url string, wordlistPath string) {
 	}
 
 	log.Println(output.String())
-	fmt.Println("asd")
 }
 
 func GetIp(url string) {
