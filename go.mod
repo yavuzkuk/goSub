@@ -4,7 +4,9 @@ go 1.21.3
 
 require (
 	github.com/fatih/color v1.17.0
+	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/projectdiscovery/subfinder/v2 v2.6.6
+	github.com/projectdiscovery/wappalyzergo v0.1.13
 	github.com/spf13/cobra v1.8.1
 )
 
@@ -58,6 +60,7 @@ require (
 	github.com/muesli/termenv v0.15.1 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/oschwald/maxminddb-golang v1.13.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect

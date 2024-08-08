@@ -4,7 +4,6 @@ import (
 	"Cyrops/wordlist"
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -163,7 +162,7 @@ func SubDomainSearch(url string, wordlistPath string) {
 	log.Println(output.String())
 }
 
-func GetIp(url string) {
+func GetIp(url string) string {
 	fmt.Println("-----------------------------" + color.BlueString("IP Info") + "-----------------------------")
 	isHttp := strings.Contains(url, "/")
 
@@ -191,36 +190,34 @@ func GetIp(url string) {
 	} else {
 		fmt.Println("Ip address error")
 	}
-	GetLocation(IPv4)
+	return IPv4
 }
 
-func GetLocation(ip string) {
-	fmt.Println("-----------------------------" + color.BlueString("Server Location") + "-----------------------------")
-	apiEndpoint := "https://ipapi.co/" + ip + "/json"
-	resp, err := http.Get(apiEndpoint)
+func JustIp(url string) string {
+	isHttp := strings.Contains(url, "/")
 
-	if err != nil {
-		fmt.Println("Location error ->", err)
+	var newUrl string = url
+
+	if isHttp {
+		urlsArray := strings.Split(url, "/")
+		newUrl = urlsArray[2]
 	}
 
-	body, err := io.ReadAll(resp.Body)
-
+	ipaddress, err := net.LookupIP(newUrl)
+	var IPv4 string
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Ip address error ->", err)
 	}
 
-	if resp.StatusCode == 200 {
-		var location IPInfo
-		err = json.Unmarshal(body, &location)
-
-		if err != nil {
-			fmt.Println("JSON Unmarshall error ->", err)
+	if ipaddress != nil {
+		for _, v := range ipaddress {
+			if len(v) > 14 {
+				// fmt.Println("Domain -->", url, " --- IPv6 -->", color.GreenString(v.String()))
+			} else {
+				IPv4 = v.String()
+				// fmt.Println("Domain -->", url, " --- IPv4 -->", color.GreenString(v.String()))
+			}
 		}
-
-		fmt.Println(location.CallingCode + "/" + location.Country + "---" + location.Region + "---" + location.City)
-		fmt.Println(location.Organization)
-	} else if resp.StatusCode == 429 {
-		fmt.Printf("You sent too much request. You are at the free API plan. %s\n", color.RedString(strconv.Itoa(resp.StatusCode)))
 	}
-
+	return IPv4
 }
