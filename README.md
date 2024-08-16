@@ -15,7 +15,7 @@ Bu araç [Golang](https://go.dev/) ile oluşturulmuştur. Bu araçla, parametre 
 - Directory Scan
 - Web Server Infos
 
- ### Parameters
+ ### Parametreler
 
 ```
  -d, --DNS Record Type string           A Record: IPv4 address
@@ -37,7 +37,7 @@ Bu araç [Golang](https://go.dev/) ile oluşturulmuştur. Bu araçla, parametre 
 
 Hedef sitede robots.txt dosyasının olup olmadığını kontrol etmek için kullanılan bir parametredir. -r ile kontrol edilir.
 
-### Directory Scan
+### Dizin taraması
 
 Parametre olarak verilen url üzerinde brute force denerek dosyaların varlığı kontrol edilir.
 
