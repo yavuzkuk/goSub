@@ -4,9 +4,6 @@ Bu araç [Golang](https://go.dev/) ile oluşturulmuştur. Bu araçla, parametre 
 
 ------
 
-This tool created with [Golang](https://go.dev/). With this tool, you can scan the website you provide as parameters.
-
-
 - DNS Record
     - MX Record
     - NS Record
@@ -36,9 +33,44 @@ This tool created with [Golang](https://go.dev/). With this tool, you can scan t
   -v, --version                          version for Cyrops
   -w, --wordlist string                  You can specify Directory Wordlist (default "wordlist/seclistWebContent.txt")
 ```
+### robots.txt
+
+Hedef sitede robots.txt dosyasının olup olmadığını kontrol etmek için kullanılan bir parametredir. -r ile kontrol edilir.
+
+### Directory Scan
+
+Parametre olarak verilen url üzerinde brute force denerek dosyaların varlığı kontrol edilir.
+
+### Location
+
+Elde edilen IP değerleriyle birlikte ülkelerin sahip olmuş olduğu IP bloklarına göre karşılaştırılıp lokasyon belirlemesi yapılır. Ülkerele ait IP bloklarına [buradan](https://lite.ip2location.com/ip-address-ranges-by-country) ulaşabilirsiniz.
+
+### Kullanılan Teknolojiler
+
+Web sitesinde kullanılan teknolojileri öğrenmek için giden gelen paketlerin incelenmesi gerekiyor. Sitenin bize dönen cevabında Serve başlığında hangi web sunucusunu kullandığını tanımlamak için kullanılabilir. Eğer DevTools sekmesini biraz karıştırıp farklı özelliklerin görünmesini sağlayabilirseniz server tipini ve arka tarafta çalışan dil hakkında bilgi edineilirsiniz. Ayrıca kaynak kodlara ve JavaScript dosyalarında bulunan global değişken isimleriyle sistemin teknolojileri hakkında bilgi edinebiliriz.
+
+<figure>
+<img src="assets/image.png">
+</figure>
 
 
-Examples:
+Bu projede kullandığımız kütüphanede benzer şekilde yaptığımız taramaları otomatize ederek sistem hakkında bize bilgi sağlamaya çalışır. 
+
+### Subdomain
+
+Brute force ile subdomain bulma yöntemi gibi çeşitli yöntemler vardır. Wordlistler kullanarak subdomain taraması yapılabilir ama bu tarama yöntemi bize daha uzun bir sürede daha az bir bilgi sağlayacaktır. 
+
+Daha fazla subdomain elde edebilmek için SSL/TLS sertifikalarının bilgilerinin saklandığı bir database olan ```crt.sh``` web sitesinden gerekli içerikleri alabiliriz.
+
+<figure>
+<img src="assets/crtsh.png">
+</figure>
+
+Google, Yahoo, Bing, Baidu ve Ask gibi birçok arama motorunu kullanarak alt alan adlarını toplayabiliriz.
+
+Pasif DNS (pDNS) dediğimiz, hem aktif hem de inaktif subdomainleri içinde barındıran bir DNs veritabanı üzerinden sorgu yaparak da subdomainleri elde edebiliriz. Gerçek zamanlı DNS sorgularının ve bu sorgulara verilen yanıtların kaydedilmesi ile Pasif DNS veritabanı oluşmuş olur. Bu süreçte DNS sunucularına herhangi bir müdahale veya aktif sorgulama yapılmaz.
+
+Örnekler:
 
 ``go run .\main.go -h``
 
@@ -46,7 +78,7 @@ Examples:
 ``go run .\main.go -u https://www.karabuk.edu.tr/``
 
 ------
-``go run .\main.go -u https://www.karabuk.edu.tr/ -w <dirWordlist> -s <subdomainWordlist>``
+``go run .\main.go -u https://www.karabuk.edu.tr/ -w <dirWordlist>``
 
 ------
 ``go run .\main.go -u https://www.karabuk.edu.tr/ -f 200``
