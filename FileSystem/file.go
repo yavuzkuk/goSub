@@ -182,9 +182,9 @@ func GetIp(url string) string {
 	if ipaddress != nil {
 		for _, v := range ipaddress {
 			if len(v) > 14 {
-				fmt.Println("Domain -->", url, " --- IPv6 -->", color.GreenString(v.String()))
+				fmt.Println("--- IPv6 -->", color.GreenString(v.String()))
 			} else {
-				fmt.Println("Domain -->", url, " --- IPv4 -->", color.GreenString(v.String()))
+				fmt.Println("--- IPv4 -->", color.GreenString(v.String()))
 			}
 		}
 	} else {

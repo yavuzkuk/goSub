@@ -53,15 +53,13 @@ func MxRecord(url string) {
 	mx, err := net.LookupMX(newUrl)
 
 	if err != nil {
-		fmt.Println("MX connect error -->", err)
+		fmt.Println("MX error --> ", color.RedString(err.Error()))
 	}
 
 	if len(mx) > 0 {
 		for _, v := range mx {
-			fmt.Println("Mail Server ---> ", color.GreenString(v.Host))
+			fmt.Println("MX error ---> ", color.GreenString(v.Host))
 		}
-	} else {
-		fmt.Println("Mail Server ---> ", color.RedString("Not found"))
 	}
 }
 
@@ -71,13 +69,11 @@ func TXTRecord(url string) {
 	txt, err := net.LookupTXT(newUrl)
 
 	if err != nil {
-		fmt.Println("TXT error --> ", err)
+		fmt.Println("TXT error --> ", color.RedString(err.Error()))
 	}
 
 	if len(txt) > 0 {
 		fmt.Println("TXT Record  ---> ", color.GreenString(txt[0]))
-	} else {
-		fmt.Println("TXT Record  ---> ", color.RedString("Not found"))
 	}
 }
 
@@ -93,7 +89,7 @@ func ARecord(url string) {
 
 	for _, v := range ipaddress {
 		if len(v) <= 5 {
-			fmt.Println("A (IPv4): ---", url, " ---> ", color.GreenString(v.String()))
+			fmt.Println("A (IPv4): ---> ", color.GreenString(v.String()))
 		}
 	}
 }
@@ -123,22 +119,13 @@ func SPFRecord(url string) {
 	resp, err := net.LookupTXT(newUrl)
 
 	if err != nil {
-		fmt.Println("SPF error --> ", err)
+		fmt.Println("SPF error --> ", color.RedString(err.Error()))
 	}
 
 	for _, v := range resp {
-		fmt.Println(v)
-	}
-
-	if len(resp) == 0 {
-		fmt.Println("TXT kayıtları bulunamadı")
-	} else {
-		spfSta := strings.HasPrefix(resp[0], "v=spf1")
-
-		if spfSta {
-			fmt.Printf("URL: %s ---> %s", url, color.GreenString("SPF kaydına sahip"))
-		} else {
-			fmt.Printf("URL: %s ---> %s", url, color.RedString("SPF kaydına sahip değil"))
+		contains := strings.Contains(v, "spf")
+		if contains {
+			fmt.Println("SPF kaydı var --> ", color.GreenString(v))
 		}
 	}
 }
