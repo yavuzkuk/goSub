@@ -6,6 +6,7 @@ package cmd
 import (
 	filesystem "Cyrops/FileSystem"
 	"Cyrops/FileSystem/header"
+	"Cyrops/FileSystem/ssl"
 	"Cyrops/FileSystem/tech"
 	"Cyrops/FileSystem/whois"
 	"log"
@@ -39,9 +40,13 @@ var rootCmd = &cobra.Command{
 		}
 
 		// filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
-		// filesystem.SubDomainSearch(Url, SubdomainWordlist)
-
+		// filesystem.SubDomainSearch(Url)
 		header.RequestHeader(Url)
+		// header.RequestHeader(Url)
+
+		if SSL {
+			ssl.SSL(Url)
+		}
 
 		if Tech {
 			tech.Tech(Url)
@@ -73,6 +78,7 @@ var RequestNumber int
 var FilterStatusCode string
 var Whois bool
 var DNS bool
+var SSL bool
 var Location bool
 var Tech bool
 
@@ -96,6 +102,7 @@ func init() {
 	rootCmd.Flags().IntVarP(&RequestNumber, "count", "c", 10, "Request count")
 	rootCmd.Flags().StringVarP(&FilterStatusCode, "Filter HTTP Status Code", "f", "200,404", "You can filter HTTP Statsus Code with -f parameter")
 	rootCmd.Flags().BoolVarP(&DNS, "DNS", "", false, "With default value the tool check the DNS record")
+	rootCmd.Flags().BoolVarP(&SSL, "ssl", "", false, "Check SSL certification")
 	rootCmd.Flags().BoolVarP(&Location, "location", "l", false, "Enable location")
 	rootCmd.Flags().BoolVarP(&Tech, "tech", "t", false, "Enable Technologies search")
 	rootCmd.Flags().BoolVarP(&Whois, "whois", "", false, "Whois")

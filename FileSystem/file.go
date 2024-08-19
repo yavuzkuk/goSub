@@ -2,11 +2,7 @@ package filesystem
 
 import (
 	"Cyrops/wordlist"
-	"bytes"
-	"context"
 	"fmt"
-	"io"
-	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -14,7 +10,6 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/projectdiscovery/subfinder/v2/pkg/runner"
 )
 
 type Response struct {
@@ -69,10 +64,16 @@ func HTTPS(url string) string {
 func SplitUrl(url string) string {
 
 	containsHttps := strings.Contains(url, "https://")
+	containsHttp := strings.Contains(url, "http://")
 
 	var newUrl []string
 	var currentUrl string = url
 	if containsHttps {
+		newUrl = strings.Split(url, "/")
+		currentUrl = newUrl[2]
+	}
+
+	if containsHttp {
 		newUrl = strings.Split(url, "/")
 		currentUrl = newUrl[2]
 	}
@@ -134,32 +135,6 @@ func BruteForceFile(url string, wordlistPath string, requestCount int, stringSta
 	if totalSubDomain == 0 {
 		fmt.Println(color.RedString("No directory found with the given URL and wordlist."))
 	}
-}
-
-func SubDomainSearch(url string, wordlistPath string) {
-	fmt.Println("-----------------------------" + color.BlueString("Subdomain Search") + "-----------------------------")
-
-	newUrl := SplitUrl(url)
-
-	subfinderOpts := &runner.Options{
-		Threads:            10,
-		Timeout:            30,
-		MaxEnumerationTime: 10,
-	}
-
-	log.SetFlags(0)
-
-	subfinder, err := runner.NewRunner(subfinderOpts)
-	if err != nil {
-		log.Fatalf("failed to create subfinder runner: %v", err)
-	}
-
-	output := &bytes.Buffer{}
-	if err = subfinder.EnumerateSingleDomainWithCtx(context.Background(), newUrl, []io.Writer{output}); err != nil {
-		log.Fatalf("failed to enumerate single domain: %v", err)
-	}
-
-	log.Println(output.String())
 }
 
 func GetIp(url string) string {
