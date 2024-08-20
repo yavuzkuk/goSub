@@ -4,11 +4,9 @@ import (
 	filesystem "Cyrops/FileSystem"
 	"crypto/tls"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"regexp"
-	"sort"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -30,14 +28,14 @@ func Tech(url string) {
 	fmt.Println("-----------------------------" + color.BlueString("Technologies") + "-----------------------------")
 
 	// ServerName(url)
-	// ServerInfo(url)
+	ServerInfo(url)
 	XpoweredBy(url)
-	// CDN(url)
-	// DetectCMS(url)
-	// DetectAnalytics(url)
-	// JSDetect(url)
-	// Icons(url)
-	// OtherDetect(url)
+	CDN(url)
+	DetectCMS(url)
+	DetectAnalytics(url)
+	JSDetect(url)
+	Icons(url)
+	OtherDetect(url)
 }
 
 func OtherDetect(url string) {
@@ -221,6 +219,17 @@ func DetectAnalytics(url string) {
 		}
 	})
 
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		source := s.Text()
+
+		for k, v := range analyticsSystems {
+			if strings.Contains(source, v) {
+				analytics[k] = ""
+			}
+		}
+
+	})
+
 	doc.Find("link").Each(func(i int, s *goquery.Selection) {
 		source, exists := s.Attr("href")
 
@@ -376,6 +385,25 @@ func XpoweredBy(url string) {
 
 func CDN(url string) {
 
+	cdnMap := map[string]string{
+		"Cloudflare":        "cloudflare",
+		"Akamai":            "akamai",
+		"Amazon CloudFront": "cloudfront",
+		"Google Cloud CDN":  "googleapis",
+		"Microsoft Azure":   "azureedge",
+		"Fastly":            "fastly",
+		"StackPath":         "stackpath",
+		"KeyCDN":            "keycdn",
+		"CDN77":             "cdn77",
+		"Alibaba Cloud CDN": "alicdn",
+		"jsDelivr":          "jsdelivr",
+		"Bootstrap CDN":     "bootstrapcdn",
+		"cdnjs":             "cdnjs",
+		"MaxCDN":            "maxcdn",
+	}
+
+	useCDN := map[string]string{}
+
 	newUrl := filesystem.HTTPS(url)
 	resp, err := http.Get(newUrl)
 
@@ -383,31 +411,29 @@ func CDN(url string) {
 		fmt.Println("HTTP get error --> ", err)
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+
 	if err != nil {
-		fmt.Println("Error reading body:", err)
+		fmt.Println("Document error --> ", err)
 	}
 
-	cdnPattern := `https://cdn\.[a-zA-Z0-9-]+\.[a-z]+[^\s]*`
+	doc.Find("link").Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("href")
 
-	re := regexp.MustCompile(cdnPattern)
-	matches := re.FindAllString(string(body), -1)
-
-	cdnList := []string{}
-	if len(matches) > 0 {
-		fmt.Println("************************" + color.MagentaString("CDN") + "************************")
-		fmt.Printf("CDN: ")
-		for _, match := range matches {
-			var isContain int = sort.SearchStrings(cdnList, match)
-
-			if isContain == 0 {
-				splitUrl := strings.Split(match, "/")[2]
-				cdnList = append(cdnList, splitUrl)
-				fmt.Println(color.GreenString(splitUrl), "    ")
+		if exists && strings.Contains(href, "cdn") {
+			for k, v := range cdnMap {
+				if strings.Contains(href, v) {
+					useCDN[k] = v
+				}
 			}
 		}
-	} else {
-		fmt.Println(color.RedString("CDN not found"))
+	})
+
+	if len(useCDN) > 0 {
+		fmt.Println("************************" + color.MagentaString("CDN") + "************************")
+		for k, _ := range useCDN {
+			fmt.Println(k)
+		}
 	}
 }
 
