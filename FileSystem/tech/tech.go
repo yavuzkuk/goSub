@@ -192,7 +192,7 @@ func DetectAnalytics(url string) {
 
 	analytics := map[string]string{}
 
-	analyticsSystems := map[string]string{"Google Tag Manager": "googletagmanager.com", "Google Analytics": "google-analytics.com", "Google Tag Services": "https://www.googletagservices.com", "Google Ad Services": "https://www.googleadservices.com", "Facebook Pixel": "https://www.facebook.com/tr", "Segment": "https://cdn.segment.com", "Hotjar": "https://www.hotjar.com", "Matomo": "https://cdn.matomo.cloud", "Google Analytics SSL": "https://ssl.google-analytics.com", "Twitter Analytics": "https://analytics.twitter.com", "Amplitude": "https://cdn.amplitude.com", "Mixpanel": "https://cdn.mixpanel.com", "FullStory": "https://www.fullstory.com", "Sentry": "https://cdn.sentry.io", "Heap Analytics": "https://www.heap.io", "Twitter Ads": "https://static.ads-twitter.com", "Cloudflare Analytics": "https://www.cloudflare.com/cdn-cgi/trace", "Intercom": "https://cdn.intercom.io", "Monsterinsights": "monsterinsights", "Fathom": "fathom"}
+	analyticsSystems := map[string]string{"Google Tag Manager": "googletagmanager.com", "Google Analytics": "google-analytics.com", "Google Tag Services": "https://www.googletagservices.com", "Google Ad Services": "https://www.googleadservices.com", "Facebook Pixel": "connect.facebook.net", "Segment": "https://cdn.segment.com", "Hotjar": "https://www.hotjar.com", "Matomo": "https://cdn.matomo.cloud", "Google Analytics SSL": "https://ssl.google-analytics.com", "Twitter Analytics": "https://analytics.twitter.com", "Amplitude": "https://cdn.amplitude.com", "Mixpanel": "https://cdn.mixpanel.com", "FullStory": "https://www.fullstory.com", "Sentry": "https://cdn.sentry.io", "Heap Analytics": "https://www.heap.io", "Twitter Ads": "https://static.ads-twitter.com", "Cloudflare Analytics": "https://www.cloudflare.com/cdn-cgi/trace", "Intercom": "https://cdn.intercom.io", "Monsterinsights": "monsterinsights", "Fathom": "fathom"}
 	newUrl := filesystem.HTTPS(url)
 
 	response, err := http.Get(newUrl)
@@ -419,6 +419,18 @@ func CDN(url string) {
 
 	doc.Find("link").Each(func(i int, s *goquery.Selection) {
 		href, exists := s.Attr("href")
+
+		if exists && strings.Contains(href, "cdn") {
+			for k, v := range cdnMap {
+				if strings.Contains(href, v) {
+					useCDN[k] = v
+				}
+			}
+		}
+	})
+
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("src")
 
 		if exists && strings.Contains(href, "cdn") {
 			for k, v := range cdnMap {
