@@ -2,7 +2,6 @@ package tech
 
 import (
 	filesystem "Cyrops/FileSystem"
-	"context"
 	"crypto/tls"
 	"fmt"
 	"io"
@@ -11,10 +10,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"time"
 
-	"github.com/chromedp/cdproto/network"
-	"github.com/chromedp/chromedp"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
 )
 
@@ -32,162 +29,349 @@ func HTTPGet(url string) *http.Response {
 func Tech(url string) {
 	fmt.Println("-----------------------------" + color.BlueString("Technologies") + "-----------------------------")
 
-	// for k, v := range res.Header {
-	// 	fmt.Println(k, " --> ", v)
-	// }
-
-	ServerName(url)
+	// ServerName(url)
+	// ServerInfo(url)
 	XpoweredBy(url)
-	CDN(url)
-	DetectCMS(url)
-	OSDetection(url)
-	DetectAnalytics(url)
-	JSDetect(url)
+	// CDN(url)
+	// DetectCMS(url)
+	// DetectAnalytics(url)
+	// JSDetect(url)
+	// Icons(url)
+	// OtherDetect(url)
 }
 
-func JSDetect(url string) {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
+func OtherDetect(url string) {
 
-	var jsFrameworks = [...]string{"bootstrap", "sweetalert", "jquery", "owl"}
+	otherDetect := map[string]string{}
 
-	var requests []string
+	newUrl := filesystem.HTTPS(url)
 
-	chromedp.ListenTarget(ctx, func(ev interface{}) {
-		if ev, ok := ev.(*network.EventRequestWillBeSent); ok {
-			requests = append(requests, ev.Request.URL)
+	response, err := http.Get(newUrl)
+
+	if err != nil {
+		fmt.Println("Response error --> ", err)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+
+	if err != nil {
+		fmt.Println("Document error --> ", err)
+	}
+
+	doc.Find("meta").Each(func(i int, s *goquery.Selection) {
+		property, exists := s.Attr("property")
+
+		if exists && strings.Contains(property, "og:") {
+			otherDetect["Open Graph"] = ""
 		}
 	})
 
-	if err := chromedp.Run(ctx,
-		chromedp.Navigate(url),
-		chromedp.Sleep(2*time.Second),
-	); err != nil {
-		log.Fatal(err)
-	}
-
-	values := make(map[string]string)
-
-	for _, request := range requests {
-		if strings.Contains(request, ".js") {
-			// splitFile := strings.Split(request, "/")
-			for _, v := range jsFrameworks {
-				if strings.Contains(request, v) {
-					values[v] = ""
-				}
-			}
+	if len(otherDetect) != 0 {
+		fmt.Println("************************" + color.MagentaString("Other") + "************************")
+		for k, _ := range otherDetect {
+			fmt.Println(k)
 		}
 	}
 
-	for k, _ := range values {
-		strings.ToUpper(k)
+}
+
+func Icons(url string) {
+	iconsMap := map[string]string{"Font Awesome": "fontawesome", "Material Icons": "materialicons", "Ionicons": "ionicons", "Bootstrap Icons": "bootstrap-icons", "Google Font": "fonts.googleapis"}
+	useFont := map[string]string{}
+
+	newUrl := filesystem.HTTPS(url)
+
+	response, err := http.Get(newUrl)
+
+	if err != nil {
+		fmt.Println("Response error --> ", err)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+
+	if err != nil {
+		fmt.Println("Document error --> ", err)
+	}
+
+	doc.Find("link").Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("href")
+
+		if exists {
+			for k, v := range iconsMap {
+				if strings.Contains(href, v) {
+					useFont[k] = ""
+				}
+			}
+		}
+	})
+
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("src")
+
+		if exists {
+			for k, v := range iconsMap {
+				if strings.Contains(source, v) {
+					useFont[k] = ""
+				}
+			}
+		}
+	})
+
+	if len(useFont) != 0 {
+		fmt.Println("************************" + color.MagentaString("Fonts") + "************************")
+
+		for k, _ := range useFont {
+			fmt.Println(k)
+		}
+	}
+
+}
+
+func JSDetect(url string) {
+	newUrl := filesystem.HTTPS(url)
+
+	jsLib := map[string]string{}
+
+	jsVersion := []string{"isotope", "swiper", "core-js", "lightbox", "clipboard", "slick", "aos", "owl", "fancybox", "jquery", "react", "vue", "angular", "lodash", "underscore", "moment", "axios", "chart", "three", "leaflet", "anime", "popper", "swiper", "select2", "owl.carousel", "gsap", "handlebars", "mustache", "backbone", "knockout", "redux", "socket.io", "leaflet", "highcharts", "semantic-ui", "fullcalendar", "sweetalert", "toastr"}
+
+	response, err := http.Get(newUrl)
+
+	if err != nil {
+		fmt.Println("Response error --> ", err)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+
+	if err != nil {
+		fmt.Println("Document error --> ", err)
+	}
+
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("src")
+
+		if exists {
+			for _, v := range jsVersion {
+				if strings.Contains(source, v) {
+					jsLib[v] = ""
+				}
+			}
+		}
+	})
+
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		id, exists := s.Attr("id")
+
+		if exists {
+			for _, v := range jsVersion {
+				if strings.Contains(id, v) {
+					jsLib[v] = ""
+				}
+			}
+		}
+	})
+
+	doc.Find("div").Each(func(i int, s *goquery.Selection) {
+		class, exists := s.Attr("class")
+
+		if exists {
+			for _, v := range jsVersion {
+				if strings.Contains(class, v) {
+					jsLib[v] = ""
+				}
+			}
+		}
+	})
+
+	if len(jsLib) != 0 {
+		fmt.Println("************************" + color.MagentaString("JS") + "************************")
+		for k, _ := range jsLib {
+			fmt.Println(k)
+		}
 	}
 }
 
 func DetectAnalytics(url string) {
-	resp := HTTPGet(url)
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	analytics := map[string]string{}
+
+	analyticsSystems := map[string]string{"Google Tag Manager": "googletagmanager.com", "Google Analytics": "google-analytics.com", "Google Tag Services": "https://www.googletagservices.com", "Google Ad Services": "https://www.googleadservices.com", "Facebook Pixel": "https://www.facebook.com/tr", "Segment": "https://cdn.segment.com", "Hotjar": "https://www.hotjar.com", "Matomo": "https://cdn.matomo.cloud", "Google Analytics SSL": "https://ssl.google-analytics.com", "Twitter Analytics": "https://analytics.twitter.com", "Amplitude": "https://cdn.amplitude.com", "Mixpanel": "https://cdn.mixpanel.com", "FullStory": "https://www.fullstory.com", "Sentry": "https://cdn.sentry.io", "Heap Analytics": "https://www.heap.io", "Twitter Ads": "https://static.ads-twitter.com", "Cloudflare Analytics": "https://www.cloudflare.com/cdn-cgi/trace", "Intercom": "https://cdn.intercom.io", "Monsterinsights": "monsterinsights", "Fathom": "fathom"}
+	newUrl := filesystem.HTTPS(url)
+
+	response, err := http.Get(newUrl)
+
 	if err != nil {
-		fmt.Printf("Sayfa içeriği okunamadı: %v\n", err)
-		fmt.Println("Tespit edilemedi")
+		fmt.Println("Request error --> ", err)
 	}
 
-	content := string(body)
-	var analytics []string
+	doc, err := goquery.NewDocumentFromReader(response.Body)
 
-	gaPattern := regexp.MustCompile(`https?://www\.googletagmanager\.com`)
-	if gaPattern.MatchString(content) {
-		analytics = append(analytics, "Google Analytics")
+	if err != nil {
+		fmt.Println("Document error --> ", err)
 	}
 
-	fbPixelPattern := regexp.MustCompile(`https?://connect\.facebook\.net/.*/fbevents\.js`)
-	if fbPixelPattern.MatchString(content) {
-		analytics = append(analytics, "Facebook Pixel")
-	}
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("src")
 
-	matomoPattern := regexp.MustCompile(`https?://.*\.matomo\.org/matomo\.js|piwik\.js`)
-	if matomoPattern.MatchString(content) {
-		analytics = append(analytics, "Matomo (Piwik)")
-	}
+		if exists {
+			for k, v := range analyticsSystems {
+				if strings.Contains(source, v) {
+					analytics[k] = ""
+				}
+			}
+		}
+	})
 
-	yandexMetricaPattern := regexp.MustCompile(`https?://mc\.yandex\.ru/metrika/watch\.js`)
-	if yandexMetricaPattern.MatchString(content) {
-		analytics = append(analytics, "Yandex Metrica")
-	}
+	doc.Find("link").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("href")
 
-	hotjarPattern := regexp.MustCompile(`https?://static\.hotjar\.com/c/hotjar-.*\.js`)
-	if hotjarPattern.MatchString(content) {
-		analytics = append(analytics, "Hotjar")
-	}
+		if exists {
+			for k, v := range analyticsSystems {
+				if strings.Contains(source, v) {
+					analytics[k] = ""
+				}
+			}
+		}
+	})
 
-	crazyEggPattern := regexp.MustCompile(`https?://script\.crazyegg\.com/pages/scripts/\d+/\d+\.js`)
-	if crazyEggPattern.MatchString(content) {
-		analytics = append(analytics, "Crazy Egg")
-	}
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		id, exists := s.Attr("id")
 
-	if len(analytics) == 0 {
-		analytics = append(analytics, "Analitik firması tespit edilemedi")
-	} else {
-		fmt.Print("Analytics: ")
-		for _, v := range analytics {
-			fmt.Print(color.GreenString(v), "    ")
+		if exists {
+			for k, v := range analyticsSystems {
+				if strings.Contains(id, v) {
+					analytics[k] = ""
+				}
+			}
+		}
+	})
+
+	if len(analytics) != 0 {
+		fmt.Println("************************" + color.MagentaString("Analytics") + "************************")
+		for k, _ := range analytics {
+
+			fmt.Println(k)
 		}
 	}
 }
 
-func OSDetection(url string) {
+func ServerInfo(url string) {
+
+	WebServers := []string{"Apache", "Nginx", "IIS", "LiteSpeed", "Caddy", "Tomcat", "OpenResty", "Gunicorn", "Node.js", "lighttpd", "uWSGI", "Jetty", "Resin", "Oracle HTTP Server", "Zeus", "XAMPP", "WampServer", "Mongoose", "Tornado", "WEBrick", "GlassFish", "JBoss", "WildFly", "Varnish", "Tengine", "H2O", "Microsoft Azure Web Apps", "Google App Engine", "Heroku", "Apache Traffic Server"}
+
+	operatingSystems := []string{"Windows", "macOS", "Linux", "FreeBSD", "OpenBSD", "NetBSD", "Solaris", "AIX", "HP-UX", "CentOS", "Debian", "Ubuntu", "Fedora", "Red Hat Enterprise Linux (RHEL)", "Arch Linux", "Alpine Linux", "Slackware", "openSUSE", "SUSE Linux Enterprise Server (SLES)", "Kali Linux", "Android", "iOS", "Chrome OS", "Windows Server", "VMware ESXi", "QNX", "Zorin OS", "Raspberry Pi OS", "Amazon Linux"}
+
+	found := map[string]string{}
+
 	resp := HTTPGet(url)
 
 	serverHeader := resp.Header.Get("Server")
 
-	if strings.Contains(serverHeader, "Unix") || strings.Contains(serverHeader, "Linux") {
-		fmt.Println("OS: ", color.GreenString("Linux/Unix"))
-	} else if strings.Contains(serverHeader, "Win32") || strings.Contains(serverHeader, "Win64") || strings.Contains(serverHeader, "Windows") {
-		fmt.Println("OS: ", color.GreenString("Windows"))
-	} else if strings.Contains(serverHeader, "Darwin") {
-		fmt.Println("OS: ", color.GreenString("macOS"))
-	} else {
-		fmt.Println(color.RedString("OS not detection"))
+	if serverHeader != "" {
+		splitString := strings.Split(serverHeader, " ")
+
+		for _, v := range splitString {
+			for _, w := range WebServers {
+				if strings.Contains(v, w) {
+					found["Web Server"] = w
+				}
+			}
+
+			for _, o := range operatingSystems {
+				if strings.Contains(v, o) {
+					found["OS"] = o
+				}
+			}
+
+		}
+	}
+
+	if len(found) > 0 {
+		fmt.Println("************************" + color.MagentaString("Server Info") + "************************")
+		for k, v := range found {
+			fmt.Println(k, " -- ", v)
+		}
 	}
 
 }
 
-func ServerName(url string) {
+// func ServerName(url string) {
 
-	resp := HTTPGet(url)
-	server := resp.Header.Get("Server")
+// 	resp := HTTPGet(url)
+// 	server := resp.Header.Get("Server")
 
-	if server == "" {
-		fmt.Println(color.RedString("Server type not found."))
-	} else {
-		fmt.Printf("Server: %s \n", color.GreenString(server))
-	}
-}
+// 	if server == "" {
+// 		fmt.Println(color.RedString("Server type not found."))
+// 	} else {
+// 		fmt.Println("************************" + color.MagentaString("Server") + "************************")
+
+// 		fmt.Println(server)
+// 	}
+// }
 
 func XpoweredBy(url string) {
 
-	resp := HTTPGet(url)
+	poweredBy := map[string]string{}
 
-	extens := []string{".js", ".net", ".php", ".node", ".java", ".ruby", ".django", ".laravel", ".symfony", ".cakephp", ".codeigniter", ".flask", ".fastapi", ".spring", ".gin", ".echo"}
-	xpoweredBy := resp.Header.Get("X-Powered-By")
+	extens := map[string]string{"PHP": ".php", "Python": ".py", "Ruby": ".rb", "Node.js": ".js", "Java": ".jsp", "ASP.NET": ".aspx", "Perl": ".pl", "ColdFusion": ".cfm", "Go": ".go", "Scala": ".scala", "C#": ".cs", "Elixir": ".ex", "Erlang": ".erl", "Rust": ".rs", "Kotlin": ".kt"}
 
-	if xpoweredBy == "" {
-		body, err := io.ReadAll(resp.Body)
+	response := HTTPGet(url)
+
+	xpowered := response.Header.Get("x-powered-by")
+
+	if xpowered == "" {
+		doc, err := goquery.NewDocumentFromReader(response.Body)
 
 		if err != nil {
-			fmt.Println("Respond body error ")
+			fmt.Println("Document error --> ", err)
 		}
 
-		for _, v := range extens {
-			if strings.Contains(string(body), v) {
-				fmt.Printf("Programming language: %s \n", color.GreenString(v))
+		doc.Find("link").Each(func(i int, s *goquery.Selection) {
+			href, exists := s.Attr("href")
+
+			if exists {
+				for k, v := range extens {
+					expression := `^http(s)?://([^/]+/)+[^/]+` + v + `(\?.*)?$`
+
+					reg := regexp.MustCompile(expression)
+
+					result := reg.FindString(href)
+					if strings.Contains(result, v) {
+						poweredBy[k] = ""
+					}
+				}
+			}
+		})
+
+		doc.Find("a").Each(func(i int, s *goquery.Selection) {
+			href, exists := s.Attr("href")
+
+			if exists {
+				for k, v := range extens {
+					expression := `^http(s)?://([^/]+/)+[^/]+` + v + `(\?.*)?$`
+
+					reg := regexp.MustCompile(expression)
+
+					result := reg.FindString(href)
+					if strings.Contains(result, v) {
+						poweredBy[k] = ""
+					}
+				}
+			}
+		})
+
+		if len(poweredBy) == 1 {
+			fmt.Println("************************" + color.MagentaString("X-Powered-By") + "************************")
+
+			for k, _ := range poweredBy {
+				fmt.Println(k)
 			}
 		}
+
 	} else {
-		fmt.Printf("Programming language: %s \n", color.GreenString(xpoweredBy))
+		fmt.Println("************************" + color.MagentaString("X-Powered-By") + "************************")
+		fmt.Println(xpowered)
 	}
+
 }
 
 func CDN(url string) {
@@ -211,6 +395,7 @@ func CDN(url string) {
 
 	cdnList := []string{}
 	if len(matches) > 0 {
+		fmt.Println("************************" + color.MagentaString("CDN") + "************************")
 		fmt.Printf("CDN: ")
 		for _, match := range matches {
 			var isContain int = sort.SearchStrings(cdnList, match)
@@ -251,33 +436,63 @@ func Ssl(url string) {
 }
 
 func DetectCMS(url string) {
-	resp := HTTPGet(url)
 
-	defer resp.Body.Close()
+	usedCMS := map[string]string{}
 
-	headers := resp.Header
+	cmsMap := map[string]string{"WordPress": "wordpress", "Joomla": "joomla", "Drupal": "drupal", "Magento": "magento", "Shopify": "shopify", "Wix": "wix", "Squarespace": "squarespace", "Blogger": "blogger", "TYPO3": "typo3", "Ghost": "ghost", "Concrete5": "concrete5", "Grav": "grav", "SilverStripe": "silverstripe", "MODX": "modx", "HubSpot CMS": "hubspot cms", "ExpressionEngine": "expressionengine", "Craft CMS": "craft cms", "Sitecore": "sitecore", "Umbraco": "umbraco", "Weebly": "weebly"}
 
-	body, err := io.ReadAll(resp.Body)
+	newUrl := filesystem.HTTPS(url)
+
+	response, err := http.Get(newUrl)
 
 	if err != nil {
-		fmt.Println("Resp body error --> ", err)
+		fmt.Println("Response error --> ", err)
 	}
 
-	respBody := string(body)
+	doc, err := goquery.NewDocumentFromReader(response.Body)
 
-	if strings.Contains(respBody, "WordPress") || strings.Contains(headers.Get("Set-Cookie"), "wordpress") {
-		fmt.Println("WordPress")
-	} else if strings.Contains(respBody, "Joomla") || strings.Contains(headers.Get("Set-Cookie"), "joomla") {
-		fmt.Println("Joomla")
-	} else if strings.Contains(respBody, "Drupal") || strings.Contains(headers.Get("Set-Cookie"), "drupal") {
-		fmt.Println("Drupal")
-	} else if strings.Contains(respBody, "Wix") {
-		fmt.Println("Wix")
-	} else if strings.Contains(respBody, "Squarespace") {
-		fmt.Println("Squarespace")
-	} else if strings.Contains(respBody, "Shopify") {
-		fmt.Println("Shopify")
-	} else {
-		fmt.Println(color.RedString("CMS not specified"))
+	if err != nil {
+		fmt.Println("Document error --> ", err)
+	}
+
+	doc.Find("meta").Each(func(i int, s *goquery.Selection) {
+		content, exists := s.Attr("content")
+		content = strings.ToLower(content)
+		if exists {
+			for k, v := range cmsMap {
+				if strings.Contains(content, v) {
+					usedCMS[k] = ""
+				}
+			}
+		}
+	})
+
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		content, exists := s.Attr("src")
+		if exists {
+			for k, v := range cmsMap {
+				if strings.Contains(content, v) {
+					usedCMS[k] = ""
+				}
+			}
+		}
+	})
+
+	doc.Find("link").Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("href")
+		if exists {
+			for k, v := range cmsMap {
+				if strings.Contains(href, v) {
+					usedCMS[k] = ""
+				}
+			}
+		}
+	})
+
+	if len(usedCMS) != 0 {
+		fmt.Println("************************" + color.MagentaString("CMS") + "************************")
+		for k, _ := range usedCMS {
+			fmt.Println(k)
+		}
 	}
 }

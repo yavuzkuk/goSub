@@ -5,7 +5,6 @@ package cmd
 
 import (
 	filesystem "Cyrops/FileSystem"
-	"Cyrops/FileSystem/header"
 	"Cyrops/FileSystem/ssl"
 	"Cyrops/FileSystem/tech"
 	"Cyrops/FileSystem/whois"
@@ -41,8 +40,13 @@ var rootCmd = &cobra.Command{
 
 		// filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
 		// filesystem.SubDomainSearch(Url)
-		header.RequestHeader(Url)
 		// header.RequestHeader(Url)
+		// header.RequestHeader(Url)
+		// filesystem.WebArchive(Url)
+
+		// filesystem.Folders(Url)
+
+		// filesystem.WebArchive(Url)
 
 		if SSL {
 			ssl.SSL(Url)

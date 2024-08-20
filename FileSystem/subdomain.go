@@ -14,6 +14,18 @@ import (
 	"github.com/fatih/color"
 )
 
+var userAgent = []string{
+	"Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9",
+
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.1823.51 Safari/537.36 Edg/114.0.1823.51",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/80.0.4170.63",
+}
+
 func SubDomainSearch(url string) {
 	fmt.Println("-----------------------------" + color.BlueString("Subdomain") + "-----------------------------")
 
@@ -21,6 +33,7 @@ func SubDomainSearch(url string) {
 	var BingSub = map[string]string{}
 	var YahooSub = map[string]string{}
 	var SSLSub = map[string]string{}
+	var InsiteSub = map[string]string{}
 
 	var totalSub = map[string]string{}
 
@@ -30,6 +43,7 @@ func SubDomainSearch(url string) {
 	BingSub = BingDork(newUrl)
 	YahooSub = Yahoo(newUrl)
 	GoogleSub = GoogleDork(newUrl)
+	InsiteSub = Insite(newUrl)
 
 	for k, _ := range GoogleSub {
 		totalSub[k] = ""
@@ -51,6 +65,10 @@ func SubDomainSearch(url string) {
 		totalSub[k] = ""
 	}
 
+	for k, _ := range InsiteSub {
+		totalSub[k] = ""
+	}
+
 	for k, _ := range totalSub {
 		fmt.Println(k)
 	}
@@ -65,13 +83,6 @@ func DNSDumpster(url string) {
 	domain := "https://www.virustotal.com/ui/domains/omu.edu.tr/subdomains?relationships=resolutions"
 
 	randomNumber := rand.Intn(5)
-	var userAgent = [5]string{
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.1823.51 Safari/537.36 Edg/114.0.1823.51",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/80.0.4170.63",
-	}
 
 	client := http.Client{}
 
@@ -172,13 +183,7 @@ func BingDork(url string) map[string]string {
 func GoogleDork(url string) map[string]string {
 
 	randomNumber := rand.Intn(5)
-	var userAgent = [5]string{
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.1823.51 Safari/537.36 Edg/114.0.1823.51",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/80.0.4170.63",
-	}
+	// var userAgent = [5]string{}
 
 	mainDomain := "https://www.google.com/search?q=inurl:" + url + "&start="
 
@@ -253,5 +258,83 @@ func Yahoo(url string) map[string]string {
 
 		})
 	}
+	return subdomains
+}
+
+func WebArchive(url string) {
+
+	targetUrl := "https://web.archive.org/cdx/search/cdx?url=" + url + "/*&output=txt&fl=original&collapse=urlkey&page=/"
+
+	response, err := http.Get(targetUrl)
+
+	if err != nil {
+		fmt.Println("Get error --> ", err)
+	}
+
+	fmt.Println(response.StatusCode)
+
+	htmlcontent, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		fmt.Println("HTML content error --> ", err)
+	}
+
+	splitBody := strings.Split(string(htmlcontent), "\n")
+
+	for _, v := range splitBody {
+		if len(v) < 240 {
+			fmt.Println(v)
+		}
+	}
+}
+
+func Insite(url string) map[string]string {
+
+	var subdomains = map[string]string{}
+
+	selectedUserAgent := userAgent[rand.Intn(len(userAgent))]
+
+	client := http.Client{}
+
+	newUrl := HTTPS(url)
+
+	request, err := http.NewRequest("GET", newUrl, nil)
+
+	if err != nil {
+		fmt.Println("Request error --> ", err)
+	}
+
+	request.Header.Add("User-agent", selectedUserAgent)
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		fmt.Println("Response error --> ", err)
+	}
+
+	fmt.Println(response.StatusCode)
+
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+
+	if err != nil {
+		fmt.Println("Document error --> ", err)
+	}
+
+	doc.Find("a").Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("href")
+
+		if exists {
+			reg := regexp.MustCompile("http(s)?://")
+			newHref := reg.ReplaceAllString(href, "")
+
+			isContains := strings.Contains(newHref, url)
+
+			if isContains {
+				newHref = strings.Split(newHref, "/")[0]
+				subdomains[newHref] = ""
+			}
+		}
+	})
+
 	return subdomains
 }
