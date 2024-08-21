@@ -73,39 +73,36 @@ func SubDomainSearch(url string) {
 		fmt.Println(k)
 	}
 	fmt.Println(len(totalSub))
-
-	// DNSDumpster(newUrl)
-
 }
 
-func DNSDumpster(url string) {
+// func DNSDumpster(url string) {
 
-	domain := "https://www.virustotal.com/ui/domains/omu.edu.tr/subdomains?relationships=resolutions"
+// 	domain := "https://www.virustotal.com/ui/domains/omu.edu.tr/subdomains?relationships=resolutions"
 
-	randomNumber := rand.Intn(5)
+// 	randomNumber := rand.Intn(5)
 
-	client := http.Client{}
+// 	client := http.Client{}
 
-	request, err := http.NewRequest("GET", domain, nil)
+// 	request, err := http.NewRequest("GET", domain, nil)
 
-	request.Header.Add("User-agent", userAgent[randomNumber])
-	request.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-	request.Header.Set("Accept-Language", "en-US,en;q=0.5")
-	request.Header.Set("Referer", "https://www.google.com/")
-	request.Header.Add("x-recaptcha-response", "true")
+// 	request.Header.Add("User-agent", userAgent[randomNumber])
+// 	request.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+// 	request.Header.Set("Accept-Language", "en-US,en;q=0.5")
+// 	request.Header.Set("Referer", "https://www.google.com/")
+// 	request.Header.Add("x-recaptcha-response", "true")
 
-	response, err := client.Do(request)
+// 	response, err := client.Do(request)
 
-	if err != nil {
-		fmt.Println("Response error --> ", err)
-	}
+// 	if err != nil {
+// 		fmt.Println("Response error --> ", err)
+// 	}
 
-	if err != nil {
-		fmt.Println("Body error --> ", err)
-	}
+// 	if err != nil {
+// 		fmt.Println("Body error --> ", err)
+// 	}
 
-	fmt.Println(response)
-}
+// 	fmt.Println(response)
+// }
 
 func SSLScraping(url string) map[string]string {
 

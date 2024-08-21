@@ -5,11 +5,13 @@ package cmd
 
 import (
 	filesystem "Cyrops/FileSystem"
+	"Cyrops/FileSystem/header"
 	"Cyrops/FileSystem/ssl"
 	"Cyrops/FileSystem/tech"
 	"Cyrops/FileSystem/whois"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -19,9 +21,9 @@ var rootCmd = &cobra.Command{
 	Use:   "gokuk",
 	Short: "This tool created with Golang. With this tool, you can scan the website you provide as parameters.",
 	Run: func(cmd *cobra.Command, args []string) {
-		// if DNSType != "" {
-		// 	DNSType = strings.ToUpper(DNSType)
-		// }
+		if DNSType != "" {
+			DNSType = strings.ToUpper(DNSType)
+		}
 
 		if Robots {
 			filesystem.Robots(Url)
@@ -35,18 +37,25 @@ var rootCmd = &cobra.Command{
 		}
 
 		if Whois {
+
 			whois.Whois(Url)
 		}
 
 		// filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
 		// filesystem.SubDomainSearch(Url)
-		// header.RequestHeader(Url)
-		// header.RequestHeader(Url)
+
+		if Request {
+			header.RequestHeader(Url)
+			header.RequestHeader(Url)
+		}
+
 		// filesystem.WebArchive(Url)
 
 		// filesystem.Folders(Url)
 
-		// filesystem.WebArchive(Url)
+		if Directory {
+			filesystem.WebArchive(Url)
+		}
 
 		if SSL {
 			ssl.SSL(Url)
@@ -54,7 +63,6 @@ var rootCmd = &cobra.Command{
 
 		if Tech {
 			tech.Tech(Url)
-			tech.Ssl(Url)
 		}
 
 		if Location {
@@ -85,23 +93,14 @@ var DNS bool
 var SSL bool
 var Location bool
 var Tech bool
+var Request bool
+var Directory bool
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Cyrops.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	rootCmd.Flags().StringVarP(&Url, "url", "u", "", "You need to specify URL required")
 	rootCmd.Flags().StringVarP(&DirectoryWordlist, "wordlist", "w", "wordlist/seclistWebContent.txt", "You can specify Directory Wordlist")
-	// rootCmd.Flags().StringVarP(&SubdomainWordlist, "subdomain-wordlist", "s", "wordlist/seclistSubdomains5000.txt", "You can specify Subdomain Wordlist")
-	rootCmd.Flags().BoolVarP(&Robots, "robots", "r", true, "With default value the tool check the robots.txt file")
-	rootCmd.Flags().BoolVar(&Robots, "no-robots", false, "Disable the robots.txt feature")
+	rootCmd.Flags().BoolVarP(&Robots, "robots", "r", false, "With default value the tool check the robots.txt file")
 	rootCmd.Flags().StringVarP(&DNSType, "DNS Record Type", "d", "A-AAAA-NS-MX-TXT", "A Record: IPv4 address\nAAAA Record:Ipv6 address\nMX Record:Mail record\nNS Record:Name server record\nTXT Record:Domain info text")
 	rootCmd.Flags().IntVarP(&RequestNumber, "count", "c", 10, "Request count")
 	rootCmd.Flags().StringVarP(&FilterStatusCode, "Filter HTTP Status Code", "f", "200,404", "You can filter HTTP Statsus Code with -f parameter")
@@ -110,6 +109,8 @@ func init() {
 	rootCmd.Flags().BoolVarP(&Location, "location", "l", false, "Enable location")
 	rootCmd.Flags().BoolVarP(&Tech, "tech", "t", false, "Enable Technologies search")
 	rootCmd.Flags().BoolVarP(&Whois, "whois", "", false, "Whois")
+	rootCmd.Flags().BoolVarP(&Request, "rr", "", false, "Request & response header")
+	rootCmd.Flags().BoolVarP(&Directory, "s", "", false, "All directory")
 
 	err := rootCmd.MarkFlagRequired("url")
 

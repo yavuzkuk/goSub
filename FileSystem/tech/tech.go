@@ -28,6 +28,7 @@ func Tech(url string) {
 	fmt.Println("-----------------------------" + color.BlueString("Technologies") + "-----------------------------")
 
 	// ServerName(url)
+	// DetectChat(url)
 	ServerInfo(url)
 	XpoweredBy(url)
 	CDN(url)
@@ -36,6 +37,73 @@ func Tech(url string) {
 	JSDetect(url)
 	Icons(url)
 	OtherDetect(url)
+	CSSDetect(url)
+}
+
+func CSSDetect(url string) {
+
+	cssLibraries := map[string]string{"Bootstrap": "bootstrap", "Bulma": "bulma", "Tailwind CSS": "tailwind", "Foundation": "foundation", "Materialize": "materialize", "Semantic UI": "semantic", "PureCSS": "pure", "UIKit": "uikit", "Skeleton": "skeleton", "Milligram": "milligram", "Spectre": "spectre", "Tachyons": "tachyons", "Material Design Lite": "material", "Normalize": "normalize", "Base CSS": "base", "MUI": "MuiCont"}
+
+	useCss := map[string]string{}
+	newUrl := filesystem.HTTPS(url)
+
+	response, err := http.Get(newUrl)
+
+	if err != nil {
+		fmt.Println("Response errorr --> ", err)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+
+	if err != nil {
+		fmt.Println("Document error --> ", err)
+	}
+
+	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("src")
+
+		if exists {
+			for k, v := range cssLibraries {
+				if strings.Contains(source, v) {
+					useCss[k] = ""
+				}
+			}
+		}
+	})
+
+	doc.Find("link").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("href")
+
+		if exists {
+			for k, v := range cssLibraries {
+				if strings.Contains(source, v) {
+					useCss[k] = ""
+				}
+			}
+		}
+
+	})
+
+	doc.Find("div").Each(func(i int, s *goquery.Selection) {
+		source, exists := s.Attr("class")
+
+		if exists {
+			for k, v := range cssLibraries {
+				if strings.Contains(source, v) {
+					useCss[k] = ""
+				}
+			}
+		}
+
+	})
+
+	if len(useCss) > 0 {
+		fmt.Println("************************" + color.MagentaString("CSS") + "************************")
+		for k, _ := range useCss {
+			fmt.Println(k)
+		}
+	}
+
 }
 
 func OtherDetect(url string) {
@@ -70,8 +138,47 @@ func OtherDetect(url string) {
 			fmt.Println(k)
 		}
 	}
-
 }
+
+// func DetectChat(url string) {
+
+// 	chat := map[string]string{}
+// 	chatSystems := map[string]string{"Intercom": "intercom", "Zendesk Chat": "zendesk", "Drift": "drift", "Tawk.to": "tawk", "LiveChat": "livechat", "Crisp": "crisp", "Olark": "olark", "HubSpot": "hubspot", "Freshchat": "freshchat", "JivoChat": "jivosite", "Pure Chat": "purechat", "SnapEngage": "snapengage", "Userlike": "userlike", "Smartsupp": "smartsupp", "Comm100": "comm100", "Zoho SalesIQ": "zoho", "Tidio": "tidio", "LivePerson": "liveperson", "HelpCrunch": "helpcrunch"}
+
+// 	newUrl := filesystem.HTTPS(url)
+
+// 	response, err := http.Get(newUrl)
+
+// 	if err != nil {
+// 		fmt.Println("Response error --> ", err)
+// 	}
+
+// 	doc, err := goquery.NewDocumentFromReader(response.Body)
+
+// 	if err != nil {
+// 		fmt.Println("Document error --> ", err)
+// 	}
+
+// 	doc.Find("script").Each(func(i int, s *goquery.Selection) {
+// 		source, exists := s.Attr("src")
+
+// 		if exists {
+// 			for k, v := range chatSystems {
+// 				if strings.Contains(source, v) {
+// 					chat[k] = ""
+// 				}
+// 			}
+// 		}
+// 	})
+
+// 	if len(chat) > 0 {
+// 		fmt.Println("************************" + color.MagentaString("Fonts") + "************************")
+// 		for k, _ := range chat {
+// 			fmt.Println(k)
+// 		}
+// 	}
+
+// }
 
 func Icons(url string) {
 	iconsMap := map[string]string{"Font Awesome": "fontawesome", "Material Icons": "materialicons", "Ionicons": "ionicons", "Bootstrap Icons": "bootstrap-icons", "Google Font": "fonts.googleapis"}
@@ -130,7 +237,7 @@ func JSDetect(url string) {
 
 	jsLib := map[string]string{}
 
-	jsVersion := []string{"isotope", "swiper", "core-js", "lightbox", "clipboard", "slick", "aos", "owl", "fancybox", "jquery", "react", "vue", "angular", "lodash", "underscore", "moment", "axios", "chart", "three", "leaflet", "anime", "popper", "swiper", "select2", "owl.carousel", "gsap", "handlebars", "mustache", "backbone", "knockout", "redux", "socket.io", "leaflet", "highcharts", "semantic-ui", "fullcalendar", "sweetalert", "toastr"}
+	jsVersion := []string{"prettyPhoto", "jquery-migrate", "isotope", "swiper", "core-js", "lightbox", "clipboard", "slick", "aos", "owl", "fancybox", "jquery", "react", "vue", "angular", "lodash", "underscore", "moment", "axios", "chart", "three", "leaflet", "anime", "popper", "swiper", "select2", "owl.carousel", "gsap", "handlebars", "mustache", "backbone", "knockout", "redux", "socket.io", "leaflet", "highcharts", "semantic-ui", "fullcalendar", "sweetalert", "toastr"}
 
 	response, err := http.Get(newUrl)
 
@@ -321,7 +428,7 @@ func XpoweredBy(url string) {
 
 	poweredBy := map[string]string{}
 
-	extens := map[string]string{"PHP": ".php", "Python": ".py", "Ruby": ".rb", "Node.js": ".js", "Java": ".jsp", "ASP.NET": ".aspx", "Perl": ".pl", "ColdFusion": ".cfm", "Go": ".go", "Scala": ".scala", "C#": ".cs", "Elixir": ".ex", "Erlang": ".erl", "Rust": ".rs", "Kotlin": ".kt"}
+	extens := map[string]string{"PHP": ".php", "Python": ".py", "Ruby": ".rb", "Node.js": ".js", "Java": ".jsp", "ASP.NET": ".aspx", "Perl": ".pl", "ColdFusion": ".cfm", "Go": ".go", "Scala": ".scala", "C#": ".cs", "Elixir": ".ex", "Erlang": ".erl", "Rust": ".rs", "Kotlin": ".kt", "Next.js": "_next"}
 
 	response := HTTPGet(url)
 
@@ -351,6 +458,19 @@ func XpoweredBy(url string) {
 			}
 		})
 
+		doc.Find("script").Each(func(i int, s *goquery.Selection) {
+			href, exists := s.Attr("src")
+
+			if exists {
+				for k, v := range extens {
+					if strings.Contains(href, v) {
+						poweredBy[k] = ""
+					}
+
+				}
+			}
+		})
+
 		doc.Find("a").Each(func(i int, s *goquery.Selection) {
 			href, exists := s.Attr("href")
 
@@ -368,7 +488,7 @@ func XpoweredBy(url string) {
 			}
 		})
 
-		if len(poweredBy) == 1 {
+		if len(poweredBy) > 0 {
 			fmt.Println("************************" + color.MagentaString("X-Powered-By") + "************************")
 
 			for k, _ := range poweredBy {
