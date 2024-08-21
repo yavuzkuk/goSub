@@ -1,6 +1,3 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -16,13 +13,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gokuk",
+	Use:   "goSUB",
 	Short: "This tool created with Golang. With this tool, you can scan the website you provide as parameters.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if DNSType != "" {
 			DNSType = strings.ToUpper(DNSType)
+		}
+
+		if All {
+			filesystem.Robots(Url)
+			filesystem.ServerInfo(Url)
+			filesystem.DNSRecord(Url, DNSType)
+			filesystem.SPFRecord(Url)
+			filesystem.GetIp(Url)
+			whois.Whois(Url)
+			filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
+			filesystem.SubDomainSearch(Url)
+			header.RequestHeader(Url)
+			header.RequestHeader(Url)
+			filesystem.WebArchive(Url)
+			ssl.SSL(Url)
+			tech.Tech(Url)
+			filesystem.GetLocation(Url)
+
 		}
 
 		if Robots {
@@ -41,8 +55,13 @@ var rootCmd = &cobra.Command{
 			whois.Whois(Url)
 		}
 
-		// filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
-		// filesystem.SubDomainSearch(Url)
+		if Brute {
+			filesystem.BruteForceFile(Url, DirectoryWordlist, RequestNumber, FilterStatusCode)
+		}
+
+		if Sub {
+			filesystem.SubDomainSearch(Url)
+		}
 
 		if Request {
 			header.RequestHeader(Url)
@@ -72,8 +91,6 @@ var rootCmd = &cobra.Command{
 	Version: "1",
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -83,7 +100,6 @@ func Execute() {
 
 var Url string
 var DirectoryWordlist string
-var SubdomainWordlist string
 var Robots bool
 var DNSType string
 var RequestNumber int
@@ -95,6 +111,9 @@ var Location bool
 var Tech bool
 var Request bool
 var Directory bool
+var Sub bool
+var Brute bool
+var All bool
 
 func init() {
 
@@ -110,7 +129,11 @@ func init() {
 	rootCmd.Flags().BoolVarP(&Tech, "tech", "t", false, "Enable Technologies search")
 	rootCmd.Flags().BoolVarP(&Whois, "whois", "", false, "Whois")
 	rootCmd.Flags().BoolVarP(&Request, "rr", "", false, "Request & response header")
-	rootCmd.Flags().BoolVarP(&Directory, "s", "", false, "All directory")
+	rootCmd.Flags().BoolVarP(&Directory, "dir", "", false, "All directory")
+	rootCmd.Flags().BoolVarP(&Sub, "sub", "", false, "Subdomains scan")
+	rootCmd.Flags().BoolVarP(&Brute, "brute", "b", false, "Brute force")
+
+	rootCmd.Flags().BoolVarP(&All, "all", "", false, "All parameters")
 
 	err := rootCmd.MarkFlagRequired("url")
 
