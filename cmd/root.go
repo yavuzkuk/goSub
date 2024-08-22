@@ -36,7 +36,6 @@ var rootCmd = &cobra.Command{
 			ssl.SSL(Url)
 			tech.Tech(Url)
 			filesystem.GetLocation(Url)
-
 		}
 
 		if Robots {

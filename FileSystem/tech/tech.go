@@ -458,23 +458,23 @@ func XpoweredBy(url string) {
 			}
 		})
 
-		doc.Find("script").Each(func(i int, s *goquery.Selection) {
-			href, exists := s.Attr("src")
+		// doc.Find("script").Each(func(i int, s *goquery.Selection) {
+		// 	href, exists := s.Attr("src")
 
-			if exists {
-				for k, v := range extens {
-					if strings.Contains(href, v) {
-						poweredBy[k] = ""
-					}
+		// 	if exists {
+		// 		for k, v := range extens {
+		// 			if strings.Contains(href, v) {
+		// 				poweredBy[k] = ""
+		// 			}
 
-				}
-			}
-		})
+		// 		}
+		// 	}
+		// })
 
 		doc.Find("a").Each(func(i int, s *goquery.Selection) {
 			href, exists := s.Attr("href")
 
-			if exists {
+			if exists && strings.Contains(href, url) {
 				for k, v := range extens {
 					expression := `^http(s)?://([^/]+/)+[^/]+` + v + `(\?.*)?$`
 
