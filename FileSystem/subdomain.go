@@ -179,8 +179,7 @@ func BingDork(url string) map[string]string {
 
 func GoogleDork(url string) map[string]string {
 
-	randomNumber := rand.Intn(5)
-	// var userAgent = [5]string{}
+	randomNumber := rand.Intn(len(userAgent))
 
 	mainDomain := "https://www.google.com/search?q=inurl:" + url + "&start="
 
@@ -252,7 +251,6 @@ func Yahoo(url string) map[string]string {
 
 				subdomains[newLink] = ""
 			}
-
 		})
 	}
 	return subdomains

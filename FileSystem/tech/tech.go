@@ -407,7 +407,6 @@ func ServerInfo(url string) {
 			fmt.Println(k, " -- ", v)
 		}
 	}
-
 }
 
 // func ServerName(url string) {

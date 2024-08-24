@@ -6,10 +6,12 @@ import (
 	"Cyrops/FileSystem/ssl"
 	"Cyrops/FileSystem/tech"
 	"Cyrops/FileSystem/whois"
+	"fmt"
 	"log"
 	"os"
 	"strings"
 
+	"github.com/mbndr/figlet4go"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +21,18 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if DNSType != "" {
 			DNSType = strings.ToUpper(DNSType)
+		}
+
+		if !Banner {
+			ascii := figlet4go.NewAsciiRender()
+
+			options := figlet4go.NewRenderOptions()
+			options.FontColor = []figlet4go.Color{
+				figlet4go.ColorRed,
+			}
+
+			renderStr, _ := ascii.RenderOpts("gosub", options)
+			fmt.Print(renderStr)
 		}
 
 		if All {
@@ -113,6 +127,7 @@ var Directory bool
 var Sub bool
 var Brute bool
 var All bool
+var Banner bool
 
 func init() {
 
@@ -131,8 +146,8 @@ func init() {
 	rootCmd.Flags().BoolVarP(&Directory, "dir", "", false, "All directory")
 	rootCmd.Flags().BoolVarP(&Sub, "sub", "", false, "Subdomains scan")
 	rootCmd.Flags().BoolVarP(&Brute, "brute", "b", false, "Brute force")
-
 	rootCmd.Flags().BoolVarP(&All, "all", "", false, "All parameters")
+	rootCmd.Flags().BoolVarP(&Banner, "banner", "x", false, "Hide banner")
 
 	err := rootCmd.MarkFlagRequired("url")
 
